@@ -14,4 +14,4 @@ include: "rules/download.smk"
 
 rule all:
     input:
-        reads_PARIS = expand("resources/sra/{accession}/{accession}.sra",accession=['SRR2814761'])
+        PARIS_fq = expand("resources/fastq/PARIS/{accession}.fastq",accession=['SRR2814761','SRR2814762','SRR2814763','SRR2814764','SRR2814765'])
