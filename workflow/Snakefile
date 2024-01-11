@@ -1,0 +1,17 @@
+__author__ = "Kristina Sungeun Song"
+__email__ = "kristina.song@usherbrooke.ca"
+
+"""
+Modified from the CRSSANT pipeline https://github.com/zhipenglu/CRSSANT
+"""
+
+#############################
+## Load rules
+#############################
+
+include: "rules/download.smk"
+
+
+rule all:
+    input:
+        reads_PARIS = expand("resources/sra/{accession}/{accession}.sra",accession=['SRR2814761'])
