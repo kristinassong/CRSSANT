@@ -2,28 +2,71 @@
 This is a modified version of the CRSSANT pipeline implemented using the [Snakemake workflow management system](https://snakemake.readthedocs.io/en/stable/) 🐍. 
 
 ## Installing Snakemake
-Please follow [the instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) to install the Snakemake workflow management tool. We recommend using `Conda/Mamba` to install Snakemake.
+Please follow the [instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) to install the Snakemake workflow management tool. We recommend using `Conda/Mamba` to install Snakemake.
 
 This Snakemake workflow has been tested with `v7.32.4`.
 
 ## Downloading FASTQ files from GEO
-This Snakemake workflow includes the following datasets.
+This Snakemake workflow includes the following datasets. The datasets/samples to be included in the workflow can be modified in `config/config.yaml`.
 
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+**PARIS**
+| Accession  | Sample Name   |
+| -----------| ------------- |
+| SRR2814761 | HeLa Cells    |
+| SRR2814762 | HeLa Cells    |
+| SRR2814763 | HEK293T Cells |
+| SRR2814764 | HEK293T Cells |
+| SRR2814765 | HEK293T Cells |
+**PARIS2**
+| Accession   | Sample Name   |
+| ----------- | ------------- |
+| SRR11624581 | HEK293T Cells |
+| SRR11624582 | HEK293T Cells |
+| SRR11624583 | HEK293T Cells |
+| SRR11624584 | HEK293T Cells |
+| SRR11624585 | HEK293T Cells |
+| SRR11624586 | HEK293T Cells |
+| SRR11624587 | HEK293T Cells |
+| SRR11624588 | HEK293T Cells |
+| SRR11624589 | HEK293T Cells |
+| SRR11951629 | HEK293T Cells |
+**SPLASH**
+| Accession  | Sample Name          |
+| ---------- | -------------------- |
+| SRR3404943 | hES Cells            |
+| SRR3404926 | hES Cells            |
+| SRR3404942 | Lymphoblastoid Cells |
+| SRR3404941 | Lymphoblastoid Cells |
+| SRR3404940 | Lymphoblastoid Cells |
+| SRR3404939 | Lymphoblastoid Cells |
+| SRR3404938 | Lymphoblastoid Cells |
+| SRR3404937 | Lymphoblastoid Cells |
+| SRR3404936 | Lymphoblastoid Cells |
+| SRR3404925 | Lymphoblastoid Cells |
+| SRR3404924 | Lymphoblastoid Cells |
+| SRR3404927 | RA Cells             |
+| SRR3404928 | RA Cells             |
+**LIGR-seq**
+| Accession  | Sample Name   |
+| ---------- | ------------- |
+| SRR3361013 | HEK293T Cells |
+| SRR3361017 | HEK293T Cells |
+
+Note that multiple runs of the Snakemake worflow may be required to successfully download all these datasets. We recommend verifying the download of all required datasets before moving onto the next steps of the CRSSANT pipeline.
 
 ## Running the Snakemake workflow
-To run this Snakemake workflow, simply run the following code in `CRSSANT/`.
+For a dry-run of this Snakemake workflow, simply run the following code from `CRSSANT/`.
+```
+snakemake -n
+```
+To run this Snakemake workflow, simply run the following code from `CRSSANT/`.
 ```
 snakemake --profile profile_slurm
 ```
 
 Please see below for more details on the CRSSANT pipeline. If you have any specific questions regarding this Snakemake workflow, please contact [Kristina Song](mailto:kristina.song@usherbrooke.ca). Questions on the technicalities of CRSSANT should be addressed to the original authors: [Zhang et al. 2022 Genome Research](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9104705/).
 
-# ⇩⇩⇩⇩⇩⇩ Written by the original authors ⇩⇩⇩⇩⇩⇩
+# ⇩⇩⇩ Written by the original authors ⇩⇩⇩
 
 # CRSSANT: Cross-linked RNA Secondary Structure Analysis using Network Techniques
 RNA crosslinking, proximity ligation and high throughput sequencing produces non-continuous reads that indicate base pairing and higher order interactions, either in RNA secondary structures or intermolecular complexes. CRSSANT (pronounced 'croissant') is a computational pipeline for analyzing non-continuous/gapped reads from a variety of methods that employ the crosslink-ligation principle, including [PARIS](https://www.ncbi.nlm.nih.gov/pubmed/27180905), [LIGR](https://www.ncbi.nlm.nih.gov/pubmed/27184080), [SPLASH](https://www.ncbi.nlm.nih.gov/pubmed/27184079), [COMRADES](https://www.ncbi.nlm.nih.gov/pubmed/30202058), [hiCLIP](https://www.ncbi.nlm.nih.gov/pubmed/25799984), etc. CRSSANT optimizes short-read mapping, automates alignment processing, and clusters gap1 and trans alignments into duplex groups (DG) and non-overlapping groups (NG). More complex arrangments are assembled into higher level structures. In particular gapm alignments with 2 gaps or 3 segments are assembled into tri-segment groups (TGs). Overlapping alignments are used to discover homotypic interactions (RNA homodimers). 
