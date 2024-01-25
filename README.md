@@ -17,6 +17,7 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR2814763 | HEK293T Cells |
 | SRR2814764 | HEK293T Cells |
 | SRR2814765 | HEK293T Cells |
+
 **PARIS2**
 | Accession   | Sample Name   |
 | ----------- | ------------- |
@@ -30,6 +31,7 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR11624588 | HEK293T Cells |
 | SRR11624589 | HEK293T Cells |
 | SRR11951629 | HEK293T Cells |
+
 **SPLASH**
 | Accession  | Sample Name          |
 | ---------- | -------------------- |
@@ -46,13 +48,14 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR3404924 | Lymphoblastoid Cells |
 | SRR3404927 | RA Cells             |
 | SRR3404928 | RA Cells             |
+
 **LIGR-seq**
 | Accession  | Sample Name   |
 | ---------- | ------------- |
 | SRR3361013 | HEK293T Cells |
 | SRR3361017 | HEK293T Cells |
 
-Note that multiple runs of the Snakemake worflow may be required to successfully download all these datasets. We recommend verifying the download of all required datasets before moving onto the next steps of the CRSSANT pipeline.
+Note that multiple runs of the Snakemake workflow may be required to successfully download all these datasets. We recommend verifying the download of all required datasets before moving onto the next steps of the CRSSANT pipeline.
 
 ## Running the Snakemake workflow
 For a dry-run of this Snakemake workflow, simply run the following code from `CRSSANT/`.
