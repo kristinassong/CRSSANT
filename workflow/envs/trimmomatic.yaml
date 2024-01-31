@@ -2,3 +2,4 @@ channels:
   - bioconda
 dependencies:
   - trimmomatic=0.39
+  - fastqc=0.12.1

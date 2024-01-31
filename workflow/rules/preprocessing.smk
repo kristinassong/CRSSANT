@@ -1,186 +1,77 @@
-######################
-# Preprocess PARIS
-######################
+rule trim3:
+    input:
+        fq_gz = "resources/fastq/{experiment}/{accession}.fastq.gz"
+    output:
+        "resources/preprocessed_fastq/{experiment}/{accession}.trim3.fastq"
+    threads:
+        32
+    conda:
+        "../envs/trimmomatic.yaml"
+    log:
+        "results/logs/trimmomatic/{experiment}/{accession}_trim3.log"
+    message:
+        "3'-end adapter trimming for {wildcards.experiment} {wildcards.accession} via Trimmomatic."
+    shell:
+        "trimmomatic SE "
+        "-threads {threads} "
+        "-phred33 "
+        "-trimlog {log} "
+        "{input} {output} "
+        "ILLUMINACLIP:resources/adapters.fa:3:20:10 SLIDINGWINDOW:4:20 MINLEN:18"
 
-rule read_collapse_PARIS:
+
+rule read_collapse:
     input:
         icSHAPE_dir = rules.download_icSHAPE_git.output.dir,
-        fq_gz = "resources/fastq/PARIS/{accession}.fastq.gz"
+        fq = rules.trim3.output
     output:
-        "resources/preprocessed_fastq/PARIS/{accession}_read_collapse.fastq"
-    params:
-        fq = "resources/fastq/PARIS/{accession}.fastq"
+        "resources/preprocessed_fastq/{experiment}/{accession}_trim3_nodup.fastq"
     conda:
         "../envs/git.yaml"
     message:
-        "Remove PCR duplicates from PARIS {wildcards.accession}."
+        "Remove PCR duplicates from {wildcards.experiment} {wildcards.accession}."
     shell:
-        "gunzip -f -c {input.fq_gz} > {params.fq} && "
-        "perl {input.icSHAPE_dir}/scripts/readCollapse.pl -U {params.fq} -o {output} "
-        "&& rm {params.fq}"
+        "perl {input.icSHAPE_dir}/scripts/readCollapse.pl -U {input.fq} -o {output}"
 
 
-rule simple_trim_PARIS:
+rule trim5:
     input:
-        icSHAPE_dir = rules.download_icSHAPE_git.output.dir,
-        fq = rules.read_collapse_PARIS.output
+        rules.read_collapse.output
     output:
-        "resources/preprocessed_fastq/PARIS/{accession}_simple_trim.fastq"
-    params:
-        head_crop = 13
+        "resources/preprocessed_fastq/{experiment}/{accession}_preprocessed.fastq"
+    threads:
+        32
+    conda:
+        "../envs/trimmomatic.yaml"
     log:
-        "results/logs/simple_trim/PARIS/{accession}.log"
+        "results/logs/trimmomatic/{experiment}/{accession}_trim5.log"
     message:
-        "Adapter trimming for PARIS {wildcards.accession} - Step 1."
+        "5'-end adapter trimming for {wildcards.experiment} {wildcards.accession} via Trimmomatic."
     shell:
-        "{input.icSHAPE_dir}/bin/simpleTrim -U {input.fq} -o {output} -d {params.head_crop} "
+        "trimmomatic SE "
+        "-threads {threads} "
+        "-phred33 "
+        "-trimlog {log} "
+        "{input} {output} "
+        "HEADCROP:17 MINLEN:20"
+
+
+rule fastqc:
+    input:
+        rules.trim5.output
+    output:
+        "results/fastqc/{experiment}/{accession}_preprocessed_fastqc.html"
+    params:
+        "results/fastqc/{experiment}"
+    conda:
+        "../envs/trimmomatic.yaml"
+    log:
+        "results/logs/fastqc/{experiment}/{accession}.log"
+    message:
+        "Quality control check on preprocessed sequence data of {wildcards.experiment} {wildcards.accession}."
+    shell:
+        "fastqc "
+        "--outdir {params} "
+        "--format fastq "
+        "{input} "
         "&> {log}"
-
-
-rule trimmomatic_PARIS:
-    input:
-        rules.simple_trim_PARIS.output
-    output:
-        "resources/preprocessed_fastq/PARIS/{accession}.fastq"
-    params:
-        adapters_dir = "resources/icSHAPE/data/adapter/"
-    threads:
-        8
-    conda:
-        "../envs/trimmomatic.yaml"
-    log:
-        "results/logs/trimmomatic/PARIS/{accession}.log"
-    message:
-        "Adapter trimming for PARIS {wildcards.accession} - Step 2 (via Trimmomatic)."
-    shell:
-        "trimmomatic SE "
-        "-threads {threads} "
-        "-phred33 "
-        "-trimlog {log} "
-        "{input} {output} "
-        "ILLUMINACLIP:{params.adapters_dir}/TruSeq2-SE.fa:2:30:4 TRAILING:20 HEADCROP:6 MINLEN:25"
-
-
-######################
-# Preprocess PARIS2
-######################
-
-rule read_collapse_PARIS2:
-    input:
-        icSHAPE_dir = rules.download_icSHAPE_git.output.dir,
-        fq_gz = "resources/fastq/PARIS2/{accession}.fastq.gz"
-    output:
-        "resources/preprocessed_fastq/PARIS2/{accession}_read_collapse.fastq"
-    params:
-        fq = "resources/fastq/PARIS2/{accession}.fastq"
-    conda:
-        "../envs/git.yaml"
-    message:
-        "Remove PCR duplicates from PARIS2 {wildcards.accession}."
-    shell:
-        "gunzip -f -c {input.fq_gz} > {params.fq} && "
-        "perl {input.icSHAPE_dir}/scripts/readCollapse.pl -U {params.fq} -o {output} "
-        "&& rm {params.fq}"
-
-
-rule simple_trim_PARIS2:
-    input:
-        icSHAPE_dir = rules.download_icSHAPE_git.output.dir,
-        fq = rules.read_collapse_PARIS2.output
-    output:
-        "resources/preprocessed_fastq/PARIS2/{accession}_simple_trim.fastq"
-    params:
-        head_crop = 13
-    log:
-        "results/logs/simple_trim/PARIS2/{accession}.log"
-    message:
-        "Adapter trimming for PARIS2 {wildcards.accession} - Step 1."
-    shell:
-        "{input.icSHAPE_dir}/bin/simpleTrim -U {input.fq} -o {output} -d {params.head_crop} "
-        "&> {log}"
-
-
-rule trimmomatic_PARIS2:
-    input:
-        rules.simple_trim_PARIS2.output
-    output:
-        "resources/preprocessed_fastq/PARIS2/{accession}.fastq"
-    params:
-        adapters_dir = "resources/icSHAPE/data/adapter/"
-    threads:
-        8
-    conda:
-        "../envs/trimmomatic.yaml"
-    log:
-        "results/logs/trimmomatic/PARIS2/{accession}.log"
-    message:
-        "Adapter trimming for PARIS2 {wildcards.accession} - Step 2 (via Trimmomatic)."
-    shell:
-        "trimmomatic SE "
-        "-threads {threads} "
-        "-phred33 "
-        "-trimlog {log} "
-        "{input} {output} "
-        "ILLUMINACLIP:{params.adapters_dir}/TruSeq2-SE.fa:2:30:4 TRAILING:20 HEADCROP:6 MINLEN:25"
-
-
-######################
-# Preprocess LIGR-seq
-######################
-
-rule read_collapse_LIGR:
-    input:
-        icSHAPE_dir = rules.download_icSHAPE_git.output.dir,
-        fq_gz = "resources/fastq/LIGR/{accession}.fastq.gz"
-    output:
-        "resources/preprocessed_fastq/LIGR/{accession}_read_collapse.fastq"
-    params:
-        fq = "resources/fastq/LIGR/{accession}.fastq"
-    conda:
-        "../envs/git.yaml"
-    message:
-        "Remove PCR duplicates from LIGR-seq {wildcards.accession}."
-    shell:
-        "gunzip -f -c {input.fq_gz} > {params.fq} && "
-        "perl {input.icSHAPE_dir}/scripts/readCollapse.pl -U {params.fq} -o {output} "
-        "&& rm {params.fq}"
-
-
-rule trimmomatic_LIGR:
-    input:
-        rules.read_collapse_LIGR.output
-    output:
-        "resources/preprocessed_fastq/LIGR/{accession}.fastq"
-    params:
-        adapters_dir = "resources/icSHAPE/data/adapter/"
-    threads:
-        8
-    conda:
-        "../envs/trimmomatic.yaml"
-    log:
-        "results/logs/trimmomatic/LIGR/{accession}.log"
-    message:
-        "Adapters and barcodes trimming for LIGR-seq {wildcards.accession} via Trimmomatic."
-    shell:
-        "trimmomatic SE "
-        "-threads {threads} "
-        "-phred33 "
-        "-trimlog {log} "
-        "{input} {output} "
-        "HEADCROP:5 "
-        "ILLUMINACLIP:{params.adapters_dir}/adapters/TruSeq3-SE.fa:2:30:4 "
-        "TRAILING:20 "
-        "MINLEN:25"
-
-
-######################
-# Preprocess SPLASH
-######################
-
-rule unzip_SPLASH:
-    input:
-        "resources/fastq/SPLASH/{accession}.fastq.gz"
-    output:
-        "resources/preprocessed_fastq/SPLASH/{accession}.fastq"
-    shell:
-        "gunzip -f -c {input} > {output}"

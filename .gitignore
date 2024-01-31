@@ -131,4 +131,7 @@ dmypy.json
 # Snakemake stuff
 .snakemake/
 results/
-resources/
+resources/fastq/
+resources/sra/
+resources/icSHAPE/
+resources/preprocessed_fastq/
