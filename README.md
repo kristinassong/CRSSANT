@@ -1,7 +1,7 @@
 # 🥐 NOTE 🥐
 This is a modified version of the CRSSANT pipeline implemented using the [Snakemake workflow management system](https://snakemake.readthedocs.io/en/stable/) 🐍. 
 
-Reference: https://github.com/zhipenglu/CRSSANT; https://github.com/whl-usc/rna2d3d
+🌟 Reference: https://github.com/zhipenglu/CRSSANT; https://github.com/whl-usc/rna2d3d 🌟
 
 ## Installing Snakemake
 Please follow the [instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) to install the Snakemake workflow management tool. We recommend using `Conda/Mamba` to install Snakemake.
