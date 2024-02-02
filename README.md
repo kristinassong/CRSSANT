@@ -31,25 +31,14 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR11624586 | HEK293T Cells |
 | SRR11624587 | HEK293T Cells |
 | SRR11624588 | HEK293T Cells |
-| SRR11624589 | HEK293T Cells |
-| SRR11951629 | HEK293T Cells |
 
 **SPLASH**
 | Accession  | Sample Name          |
 | ---------- | -------------------- |
-| SRR3404943 | hES Cells            |
-| SRR3404926 | hES Cells            |
-| SRR3404942 | Lymphoblastoid Cells |
-| SRR3404941 | Lymphoblastoid Cells |
-| SRR3404940 | Lymphoblastoid Cells |
-| SRR3404939 | Lymphoblastoid Cells |
-| SRR3404938 | Lymphoblastoid Cells |
-| SRR3404937 | Lymphoblastoid Cells |
-| SRR3404936 | Lymphoblastoid Cells |
-| SRR3404925 | Lymphoblastoid Cells |
 | SRR3404924 | Lymphoblastoid Cells |
-| SRR3404927 | RA Cells             |
-| SRR3404928 | RA Cells             |
+| SRR3404925 | Lymphoblastoid Cells |
+| SRR3404936 | Lymphoblastoid Cells |
+| SRR3404937 | Lymphoblastoid Cells |
 
 **LIGR-seq**
 | Accession  | Sample Name   |
