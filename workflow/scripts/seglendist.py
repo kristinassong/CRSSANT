@@ -13,20 +13,14 @@ python seglendist.py align_seglen.list list align_seglen.pdf
 import matplotlib.pyplot as plt
 import sys, re, matplotlib, matplotlib.pyplot as plt
 
-if len(sys.argv)< 4:
-    print("Usage: python armsizedist.py inputfile filetype outputfile")
-    print("filetype: sam or list")
-    print("when input is sam, output is list")
-    print("when input is list, output is the pdf figure")
-    sys.exit()
 
-inputfile = open(sys.argv[1], 'r')
-filetype = sys.argv[2]
+inputfile = open(snakemake.input[0], 'r')
+filetype = snakemake.params.file_type
 
 
 ##part1: save the size list as space delimited numbers in one line in a file. 
 if filetype == "sam":
-    outputfile = open(sys.argv[3], 'w')
+    outputfile = open(snakemake.output[0], 'w')
     sizelist = []
     for line in inputfile:
         if line[0] == "@": continue
@@ -49,8 +43,7 @@ elif filetype == "list":
     plt.subplots_adjust(left=0.25)
     plt.subplots_adjust(right=0.95)
 
-    n, bins, patches = plt.hist(sizelist, [x+0.5 for x in range(0,100)], \
-                                histtype='step', cumulative=True, normed=1) 
+    n, bins, patches = plt.hist(sizelist, [x+0.5 for x in range(0,100)], histtype='step', cumulative=True, density=True) 
     plt.setp(patches, 'facecolor', 'b', 'alpha', 0.75)
     plt.xlim(-10, 50)
     plt.ylim(0, 1.1)
@@ -59,7 +52,7 @@ elif filetype == "list":
     ax.yaxis.set_major_locator(yloc)
     ax.set_xlabel("segment length (nt)") #, fontsize=15
     ax.set_ylabel("cumulative frequency") #, fontsize=15
-    plt.savefig(sys.argv[3])
+    plt.savefig(snakemake.output[0])
     plt.show()
            
 

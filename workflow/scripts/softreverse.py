@@ -40,14 +40,9 @@ import sys
 import re
 
 
-
-if len(sys.argv) < 3:
-    print("Usage: python softreverse.py insam outfastq")
-    sys.exit()
-
 minlen = 5 #minimal length of the softclipped shorter segment
-insam = open(sys.argv[1], 'r')
-outfastq = open(sys.argv[2], 'w')
+insam = open(snakemake.input[0], 'r')
+outfastq = open(snakemake.output[0], 'w')
 
 for line in insam:
     if line[0] == '@': continue
@@ -69,7 +64,7 @@ for line in insam:
             QUAL = QUAL[softslen[0]:] + QUAL[:softslen[0]]
         elif 'S' not in subMS[0] and 'S' in subMS[-1]:
             SEQ = SEQ[-softslen[0]:] + SEQ[:-softslen[0]]
-            QUAL = SEQ[-softslen[0]:] + SEQ[:-softslen[0]]
+            QUAL = QUAL[-softslen[0]:] + QUAL[:-softslen[0]]
         elif 'S' in subMS[0] and 'S' in subMS[-1]:
             SEQ = SEQ[-softslen[1]:] + \
                   SEQ[softslen[0]:-softslen[1]] + SEQ[:softslen[0]] 
@@ -80,6 +75,14 @@ for line in insam:
 
 insam.close()
 outfastq.close()
+
+
+
+
+
+
+
+
 
 
 
