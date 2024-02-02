@@ -135,3 +135,4 @@ resources/fastq/
 resources/sra/
 resources/icSHAPE/
 resources/preprocessed_fastq/
+resources/genes.bed

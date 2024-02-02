@@ -10,22 +10,14 @@ gap openning errors.
 """
 import sys, os, re
 from datetime import datetime
-if len(sys.argv) < 6:
-    print("\nUsage: python gapfilter.py annotation insam outsam idloc short\n"
-     "annotation should be in the GTF format\n"
-     "Find location of the transcript_id (space sep. column num) for idloc\n"
-     "idloc=11 for hg38_refGene.sorted.gtf\n"
-     "shift of 2nt is used to account for mismapping to splice junctions\n"
-     "optional: remove short (1/2nt) gaps, yes or no\n"
-     "the gapmfilter.sam output contain alignments with 1 or more good gaps\n")
-    sys.exit()
+
 
 print(str(datetime.now())[:-7], "Starting the gapfilter analysis ...")
-anno = open(sys.argv[1], 'r')
-inputsam = open(sys.argv[2], 'r')
-outputsam = open(sys.argv[3], 'w')
-idloc = int(sys.argv[4])
-short = sys.argv[5] #yes to remove alignments with only 1/2nt gaps, or no. 
+anno = open(snakemake.params.annotation, 'r')
+inputsam = open(snakemake.input[0], 'r')
+outputsam = open(snakemake.output[0], 'w')
+idloc = int(snakemake.params.idloc)
+short = snakemake.params.short #yes to remove alignments with only 1/2nt gaps, or no. 
 shift = 2 #allow the junction to shift to the left or right by at most 2nt. 
 inputcount = 0
 gapcount = 0
@@ -56,7 +48,7 @@ print(str(datetime.now())[:-7], "Reading the annotation GTF file ...")
 transdict = {} #transcript dictionary, key: transcript id, value: exon bounds 
 for line in anno:
     record = line.split()
-    if line[0]=="#" or record[0]=='track' or record[2]!='exon': continue
+    if line[0]=="#" or record[0]=='track' or record[2]!='exon' or record[2]!='gene': continue
     if record[idloc-1] != "transcript_id": #9-12: gene_id "X";transcript_id "Y";
         print("transcript_id not in expected location, exiting"); sys.exit()
     transcript = record[idloc].strip('";')

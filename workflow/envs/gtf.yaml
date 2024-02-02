@@ -1,0 +1,8 @@
+channels:
+  - default
+  - conda-forge
+  - bioconda
+dependencies:
+  - libgcc-ng=13.2.0
+  - pandas=2.1.4
+  - pyranges=0.0.129

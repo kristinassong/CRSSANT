@@ -1,5 +1,5 @@
 """
-gaptypes.py, Zhipeng Lu, Zhipengluchina@gmail.com
+gapanalysis.py, Zhipeng Lu, Zhipengluchina@gmail.com
 
 Table of Contents
 0. introduction to the pipeline
@@ -101,19 +101,12 @@ sys.path.append("/anaconda/lib/python2.7/site-packages")
 from datetime import datetime
 from multiprocessing import Process, Lock, Manager
 
-if len(sys.argv) < 6:
-    print "Usage: python gapanalysis.py inputsam outprefix glenlog minlen npro"
-    print "input sam can be either sorted based on coordinates or unsorted"
-    print "glenlog: default -1, same as scoreGenomicLengthLog2scale"
-    print "minlen: minimum length for segment to be in the database, default 15"
-    print "right now the TAGs are not accurate"
-    sys.exit()
 
-inputfile = sys.argv[1]
-outprefix = sys.argv[2]
-glenlog = float(sys.argv[3]) #default -1. Need to test the parameters. 
-minlen = int(sys.argv[4]) #min length for segment to be in the junction database
-npro = int(sys.argv[5]) #number of processors to use
+inputfile = snakemake.input[0]
+outprefix = snakemake.params.output_prefix
+glenlog = float(snakemake.params.glenlog) #default -1. Need to test the parameters. 
+minlen = int(snakemake.params.minlen) #min length for segment to be in the junction database
+npro = int(snakemake.params.nprocs) #number of processors to use
 nonconreads = {} #dictionary to store all noncontinuous reads. need large memory
 inputsam = open(inputfile, 'r'); del inputfile
 inputcount = 0 #total number of reads in the file
@@ -127,7 +120,7 @@ gapmalign = []#all multi-gap alignments (gapnorm, chimforward, chimbackward)
 gapmsam = open(outprefix + 'gapm.sam', 'w') 
 gapmcount = 0
 rrialign = [] #chimeric alignments on different strands or chromosomes
-rrisam = open(outprefix + 'rri.sam', 'w')
+rrisam = open(outprefix + 'trans.sam', 'w')
 rricount = 0 #some of the chimeric alignments on the same strand may be rri
 homoalign = [] #negative gaps after rearrangement, likely homodimers
 homosam = open(outprefix + 'homo.sam', 'w')
@@ -354,30 +347,26 @@ def trimclip2line(line): #this function returns the new alignment in a string
 logfile = open(outprefix + 'log.out', 'w')
 logstr = '\n'+timenow()+" Started gapanalysis.py ...\n"
 logstr += (timenow()+" Collecting alignments into a dictionary ...\n")
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 header=''; firstline=''
 for line in inputsam: #############process header lines for output sam files
-    if line[0]=="@": header+=line
-    else: firstline=line; inputcount+=1; break
-contsam.write(header); gap1sam.write(header); gapmsam.write(header)
-homosam.write(header); rrisam.write(header); badsam.write(header)
-if "SA:Z:" not in firstline.split()[-1] and 'N' not in firstline.split()[5]:
-    contalign.append(line); contcount+=1
-else: nonconreads[firstline.split()[0]]=[firstline]
-del firstline, header
+    if line[0]=="@": header+=line; continue
+    elif "SA:Z:" in line.split()[-1] or 'N' in line.split()[5]:
+        nonconreads[line.split()[0]]=[]
+inputsam.close()
 
+inputsam = open(snakemake.input[0], 'r'); 
 for line in inputsam: #############store alignments in a dictionary, key=QNAME
-    inputcount+=1 
-    if not inputcount%10000000: #write output after every 10 million reads
+    if line[0]!="@":
+        inputcount+=1
         contsam.write(''.join(contalign)); contalign=[]#write cont alignments
-        logstr=timenow()+" Processed "+str(inputcount)+" alignments ...\n"
-        logfile.write(logstr); print logstr,
-    if "SA:Z:" not in line.split()[-1] and 'N' not in line.split()[5]:
-        contalign.append(line); contcount+=1; continue
-    if line.split()[0] in nonconreads: nonconreads[line.split()[0]].append(line)
-    else: nonconreads[line.split()[0]]=[line]
+        if line.split()[0] not in nonconreads:
+            contalign.append(line); contcount+=1; continue
+        elif len(nonconreads[line.split()[0]])<2:
+            nonconreads[line.split()[0]].append(line)
+        
 logstr=timenow()+" Total alignments: "+ str(inputcount) + '\n'
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 inputsam.close()
 readcount=len(nonconreads)
 ################################################################################
@@ -409,12 +398,12 @@ intvlslongall = [] #store all the long intervals to build the connections
 tempcount = 0
 
 logstr=timenow()+" Classifying alignments into 4 types ...\n"
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 for QNAME in nonconreads:
     tempcount+=1
     if not tempcount%1000000: #write output after every million reads
         logstr=timenow()+" Categorized "+str(tempcount)+" reads ...\n"
-        logfile.write(logstr); print logstr,
+        logfile.write(logstr); print(logstr),
     """
     ##############A. make sure that only MINSH=X are present in CIGAR
     #unnecessary to run this test for STAR output using my new parameters.
@@ -456,13 +445,13 @@ del nonconreads
 
 ##############E. establish the connections in 5nt intervals
 logstr=timenow()+" Building connections ...\n"
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 tempcount=0
 for intvlslong in intvlslongall:
     tempcount+=1
-    if not tempcount%100000:
+    if not tempcount%1000000:
         logstr=timenow()+" Built connections for "+str(tempcount)
-        logfile.write(logstr+" alignments...\n");print logstr +" alignments..."
+        logfile.write(logstr+" alignments...\n");print(logstr +" alignments...")
     grids=[] #eg.[[(chr1,'+',5),(chr1,'+',10)],[(chr2,'+',5),(chr2,'+',10)]]
     for intvl in intvlslong:
         POSs = [i for i in range(intvl[2]-4,intvl[3]+5) if not i%5]
@@ -472,7 +461,7 @@ for intvlslong in intvlslongall:
         for m,n in itertools.product(grids[i],grids[j]): connect[m+n]=''
 del intvlslongall
 logstr=timenow()+" Number of connections: " +str(len(connect))+'\n'
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 
 """
 #check objects at the moment
@@ -502,14 +491,14 @@ print [i for i in dir() if 'align' not in i and 'count' not in i \
 #output files include the following: contsam, gap1sam, gapmsam
 
 logstr=timenow()+" Processing gapped alignments ...\n"
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 tempcount=0
 
 for QNAME in gapalign:
     tempcount+=1
     if not tempcount%1000000:
-        logstr=timenow()+" Processed "+str(tempcount)+" gaped reads ...\n"
-        logfile.write(logstr); print logstr,
+        logstr=timenow()+" Processed "+str(tempcount)+" gapped reads ...\n"
+        logfile.write(logstr); print(logstr),
     for line in gapalign[QNAME]:
         ###A. export alignments with every segment >minlen or pass penalty 
         #if there are more than one short segments, only test the shortest
@@ -524,7 +513,9 @@ for QNAME in gapalign:
         shortsegs = [i for i in range(len(Qlens)) if Qlens[i]<minlen]#eg [0,2,4]
         longsegs = [i for i in range(len(Qlens)) if Qlens[i]>=minlen]#eg [1,3]
         if not longsegs:badcount+=1;badalign.append(line);continue#ignore short
+        #print(shortsegs,longsegs,intvls,connect)
         badsegs=testconnect(shortsegs,longsegs,intvls,connect)
+        #print(badsegs)
         alignnew=align #now trim segs and output alignments
         for (i,new) in zip([3,5,9,10],trimseg(line,badsegs)):alignnew[i]=new
         linenew = '\t'.join(alignnew)
@@ -549,14 +540,14 @@ del gapalign
 #input: chimdiscalign dictionary. output: contalign, gap1align, gapmalign
 
 logstr=timenow()+" Processing discrete chimera ...\n"
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 chimdiscpair = {} #store the alignments to process forward and backward later
 tempcount=0
 for QNAME in chimdiscalign:
     tempcount+=1
     if not tempcount%1000000:
         logstr=timenow()+" Processed "+str(tempcount)+" discrete chimera ...\n"
-        logfile.write(logstr); print logstr,
+        logfile.write(logstr); print(logstr),
     
     ###A. store chimera that pass penalty test
     line1,line2 = tuple(chimdiscalign[QNAME])
@@ -609,7 +600,7 @@ for QNAME in chimdiscpair:
     tempcount+=1
     if not tempcount%1000000:
         logstr=timenow()+" Processed "+str(tempcount)+" discrete pairs ...\n"
-        logfile.write(logstr); print logstr,
+        logfile.write(logstr); print(logstr),
             
     ##############A. set up line1/2, lineL/R, align1/2, alignL/R, CIGARL/R
     line1,line2 = tuple(chimdiscpair[QNAME])
@@ -660,13 +651,13 @@ del chimdiscalign, chimdiscpair
 #input: chimdiffalign. output: contalign, gap1align, gapmalign, rrialign
     
 logstr=timenow()+" Processing noncolinear chimera (diff chr/strand) ...\n"
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 tempcount=0
 for QNAME in chimdiffalign:
     tempcount+=1
     if not tempcount%1000000:
         logstr=timenow()+" Processed "+str(tempcount)+" noncolinear chimera ..."
-        logfile.write(logstr+'\n'); print logstr
+        logfile.write(logstr+'\n'); print(logstr)
     
     ###A. all segments are at least minlen (e.g. 15nt) or pass penalty
     #only test one shortest segment, export to rri if both pass the penalty test
@@ -724,13 +715,13 @@ del chimdiffalign
 #only MSH allowed in each side at the moment
 
 logstr=timenow()+" Processing overlap chimera ...\n"
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 tempcount=0
 for QNAME in chimoveralign:
     tempcount+=1
     if not tempcount%1000000:
         logstr=timenow()+" Processed "+str(tempcount)+" overlap chimera ...\n"
-        logfile.write(logstr); print logstr,
+        logfile.write(logstr); print(logstr),
         
     ###A. chimera on the same chr & strand, discard ones with additional 'NI'
     line1,line2 = tuple(chimoveralign[QNAME])
@@ -763,7 +754,7 @@ del chimoveralign
 ################################################################################
 ################################################################################
 
-
+totalalignment = contcount + gap1count + gapmcount + rricount + homocount + badcount
 
 
 
@@ -777,17 +768,17 @@ for x,y in[(contalign,contsam),(gap1align,gap1sam),(gapmalign,gapmsam),\
            (rrialign,rrisam),(homoalign,homosam),(badalign,badsam)]:
     y.write(''.join(x)); del x; y.close() #write to output
 logstr=timenow()+" Finished gapanalysis.py successfully\n\n"
-logfile.write(logstr); print logstr,
+logfile.write(logstr); print(logstr),
 
 logstr= \
-"              Total input alignment number: " + str(inputcount) + '\n' + \
+"              Total input alignment number: " + str(totalalignment) + '\n' + \
 "           Continuous alignments (no gaps): " + str(contcount) + '\n' + \
 "             Two-segment gapped alignments: " + str(gap1count) + '\n' + \
 "           Multi-segment gapped alignments: " + str(gapmcount) + '\n' + \
 "        Other chimeric (different str/chr): " + str(rricount) + '\n' + \
 "          Overlapping chimeric (homotypic): " + str(homocount) + '\n' + \
 "                            Bad alignments: " + str(badcount) + '\n'
-logfile.write(logstr); print logstr
+logfile.write(logstr); print(logstr)
 logfile.close()
 
 

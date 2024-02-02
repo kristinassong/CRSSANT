@@ -47,12 +47,12 @@ classify_alignments_2:
   mem: 128G
   time: 600
 
-cluster_gap1_trans_alignments:
+DG_NG_assembly:
   cpus-per-task: 16
   mem: 128G
   time: 600
 
-cluster_gapm_alignments:
+TG_assembly:
   cpus-per-task: 16
   mem: 128G
   time: 600

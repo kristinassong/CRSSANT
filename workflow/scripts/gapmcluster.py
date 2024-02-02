@@ -52,15 +52,10 @@ sys.path.append("/home/zhipeng/lib/lib/python2.7/site-packages")
 # for use on changrila
 import intervaltree
 
-if len(sys.argv) < 3:
-    print("Usage: python gapmcluster.py bedpe gapm.sam")
-    print("Assume the DGs are all on the same chromsome and strand")
-    sys.exit()
 
-
-bedpe = open(sys.argv[1], 'r')
-gapmsam = open(sys.argv[2], 'r')
-gapmout = open(sys.argv[2][:-4] + '_tg.sam', 'w')
+bedpe = open(snakemake.input.bedpe, 'r')
+gapmsam = open(str(snakemake.input.gapm), 'r')
+gapmout = open(snakemake.output[0], 'w')
 over_threshold = 0.5 #overlap of overlapped arm in alternative structures
 alt_threshold = 0.2 #overlap of the other arm in alternative structures
 

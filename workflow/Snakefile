@@ -18,29 +18,31 @@ include: "rules/download.smk"
 include: "rules/preprocessing.smk"
 include: "rules/mapping.smk"
 include: "rules/stats.smk"
+include: "rules/crssant.smk"
 
 
 rule all:
     input:
-        # Step 1: Download FASTQ files from GEO -- may require multiple runs
+        #### Step 1: Download FASTQ files from GEO -- may require multiple runs
         PARIS_fq = expand("resources/fastq/PARIS/{accession}.fastq.gz",accession=config['PARIS']),
         PARIS2_fq = expand("resources/fastq/PARIS2/{accession}.fastq.gz",accession=config['PARIS2']),
         LIGR_fq = expand("resources/fastq/LIGR/{accession}.fastq.gz",accession=config['LIGR']),
         SPLASH_fq = expand("resources/fastq/SPLASH/{accession}.fastq.gz",accession=config['SPLASH']),
-        # Step 2: Download git repo -- use profile_local
+        #### Step 2: Download git repo -- use profile_local
         icSHAPE_git = "resources/icSHAPE/icSHAPE_pipeline.pl",
-        # Step 3: CRSSANT
+        #### Step 3: CRSSANT
+        # FastQC
         PARIS_fastqc = expand("results/fastqc/PARIS/{accession}_preprocessed_fastqc.html",accession=config['PARIS']),
         PARIS2_fastqc = expand("results/fastqc/PARIS2/{accession}_preprocessed_fastqc.html",accession=config['PARIS2']),
         LIGR_fastqc = expand("results/fastqc/LIGR/{accession}_preprocessed_fastqc.html",accession=config['LIGR']),
         SPLASH_fastqc = expand("results/fastqc/SPLASH/{accession}_preprocessed_fastqc.html",accession=config['SPLASH']),
-        # Step 3: Mapping stats
-        #LIGR_stats = expand("results/stats/{experiment}/{accession}/{accession}_{stats}len.pdf",experiment=['LIGR'],accession=config['LIGR'],stats=['seg','gap']),
-        # Step 3: CRSSANT
-        #PARIS_gap1_trans_alignments = expand("results/cluster_gap1_trans/{experiment}/{accession}/{accession}_gap1filter_trans_merged_{ext}",experiment=['PARIS'],accession=['SRR2814761'],ext=['clustered.sam','dg.bedpe']),
-        #PARIS_gapm_alignments = expand("results/cluster_gapm/{experiment}/{accession}/{accession}_gapmfilter_tg.sam",experiment=['PARIS'],accession=['SRR2814761']),
-        # Step 4: Stats
-        #PARIS_stats = expand("results/stats/{experiment}/{accession}/{accession}_{gap_type}_{stats}len.pdf",experiment=['PARIS'],accession=config['PARIS'],gap_type=['gap1','gapm'],stats=['seg','gap']),
-        #PARIS2_stats = expand("results/stats/{experiment}/{accession}/{accession}_{gap_type}_{stats}len.pdf",experiment=['PARIS2'],accession=config['PARIS2'],gap_type=['gap1','gapm'],stats=['seg','gap']),
-        #LIGR_stats = expand("results/stats/{experiment}/{accession}/{accession}_{gap_type}_{stats}len.pdf",experiment=['LIGR'],accession=config['LIGR'],gap_type=['gap1','gapm'],stats=['seg','gap']),
-        #SPLASH_stats = expand("results/stats/{experiment}/{accession}/{accession}_{gap_type}_{stats}len.pdf",experiment=['SPLASH'],accession=config['SPLASH'],gap_type=['gap1','gapm'],stats=['seg','gap'])
+        # Mapping stats
+        PARIS_len_stats = expand("results/stats/PARIS/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS'],stats=['seg','gap']),
+        PARIS2_len_stats = expand("results/stats/PARIS2/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS2'],stats=['seg','gap']),
+        LIGR_len_stats = expand("results/stats/LIGR/{accession}/{accession}_{stats}len.pdf",accession=config['LIGR'],stats=['seg','gap']),
+        SPLASH_len_stats = expand("results/stats/SPLASH/{accession}/{accession}_{stats}len.pdf",accession=config['SPLASH'],stats=['seg','gap']),
+        # Assembly
+        #PARIS_asm = expand("results/crssant/PARIS/{accession}/{accession}_pri_gapm_filtered_tg.sam",accession=config['PARIS']),
+        #PARIS2_asm = expand("results/crssant/PARIS2/{accession}/{accession}_pri_gapm_filtered_tg.sam",accession=config['PARIS2']),
+        #LIGR_asm = expand("results/crssant/LIGR/{accession}/{accession}_pri_gapm_filtered_tg.sam",accession=config['LIGR']),
+        #SPLASH_asm = expand("results/crssant/SPLASH/{accession}/{accession}_pri_gapm_filtered_tg.sam",accession=config['SPLASH'])

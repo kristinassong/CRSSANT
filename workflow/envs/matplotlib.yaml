@@ -1,0 +1,4 @@
+channels:
+  - conda-forge
+dependencies:
+  - matplotlib=3.8.2
