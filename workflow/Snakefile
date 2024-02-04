@@ -32,15 +32,15 @@ rule all:
         icSHAPE_git = "resources/icSHAPE/icSHAPE_pipeline.pl",
         #### Step 3: CRSSANT
         # FastQC
-        PARIS_fastqc = expand("results/fastqc/PARIS/{accession}_preprocessed_fastqc.html",accession=config['PARIS']),
-        PARIS2_fastqc = expand("results/fastqc/PARIS2/{accession}_preprocessed_fastqc.html",accession=config['PARIS2']),
-        LIGR_fastqc = expand("results/fastqc/LIGR/{accession}_preprocessed_fastqc.html",accession=config['LIGR']),
-        SPLASH_fastqc = expand("results/fastqc/SPLASH/{accession}_preprocessed_fastqc.html",accession=config['SPLASH']),
+        PARIS_qc = expand("results/fastqc/{qc_type}/PARIS/{accession}_fastqc.html",accession=config['PARIS'],qc_type=['raw','preprocessed']),
+        PARIS2_qc = expand("results/fastqc/{qc_type}/PARIS2/{accession}_fastqc.html",accession=config['PARIS2'],qc_type=['raw','preprocessed']),
+        LIGR_qc = expand("results/fastqc/preprocessed/LIGR/{accession}_fastqc.html",accession=config['LIGR']),
+        SPLASH_qc = expand("results/fastqc/preprocessed/SPLASH/{accession}_fastqc.html",accession=config['SPLASH']),
         # Mapping stats
-        PARIS_len_stats = expand("results/stats/PARIS/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS'],stats=['seg','gap']),
-        PARIS2_len_stats = expand("results/stats/PARIS2/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS2'],stats=['seg','gap']),
-        LIGR_len_stats = expand("results/stats/LIGR/{accession}/{accession}_{stats}len.pdf",accession=config['LIGR'],stats=['seg','gap']),
-        SPLASH_len_stats = expand("results/stats/SPLASH/{accession}/{accession}_{stats}len.pdf",accession=config['SPLASH'],stats=['seg','gap']),
+        #PARIS_len_stats = expand("results/stats/PARIS/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS'],stats=['seg','gap']),
+        #PARIS2_len_stats = expand("results/stats/PARIS2/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS2'],stats=['seg','gap']),
+        #LIGR_len_stats = expand("results/stats/LIGR/{accession}/{accession}_{stats}len.pdf",accession=config['LIGR'],stats=['seg','gap']),
+        #SPLASH_len_stats = expand("results/stats/SPLASH/{accession}/{accession}_{stats}len.pdf",accession=config['SPLASH'],stats=['seg','gap']),
         # Assembly
         #PARIS_asm = expand("results/crssant/PARIS/{accession}/{accession}_pri_gapm_filtered_tg.sam",accession=config['PARIS']),
         #PARIS2_asm = expand("results/crssant/PARIS2/{accession}/{accession}_pri_gapm_filtered_tg.sam",accession=config['PARIS2']),

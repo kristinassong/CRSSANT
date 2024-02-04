@@ -541,7 +541,6 @@ def create_stats(dg_align_dict, genealign, covdict):
         start1,end1,start2,end2=tuple(dg_inds)
         range1=[i*10 for i in range(floor(int(start1)/10),ceil(int(end1)/10))]
         range2=[i*10 for i in range(floor(int(start2)/10),ceil(int(end2)/10))]
-        print(covdict)
         overlap1=max([covdict[(chrom1,strand1,i)] for i in range1 if
                       (chrom1,strand1,i) in covdict])
         overlap2=max([covdict[(chrom2,strand2,i)] for i in range2 if
@@ -731,11 +730,11 @@ def main(): #get it to work on a simple case first, before global optimization
     
     # 5) Initalize DG files and output SAM and DG files
     file_base = args.alignfile.split('/')[-1].split('.sam')[0]
-    if args.cluster=='cliques':
-        clustering_str='%s.t_o%s'%(args.cluster,args.t_o)
-    else: clustering_str='%s.t_o%s.t_eig%s'%(args.cluster,args.t_o,args.t_eig)
+    #if args.cluster=='cliques':
+    #    clustering_str='%s.t_o%s'%(args.cluster,args.t_o)
+    #else: clustering_str='%s.t_o%s.t_eig%s'%(args.cluster,args.t_o,args.t_eig)
     #file_base += '.%s' %clustering_str
-    outsam = args.out + file_base + '.sam'
+    outsam = args.out + file_base + '_dg.sam'
     outdg = args.out + file_base +  '_dg.bedpe'
     with open(outsam, 'w') as f: f.write(samheader)
     with open(outdg, 'w') as f: pass

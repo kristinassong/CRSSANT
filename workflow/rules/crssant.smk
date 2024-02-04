@@ -35,7 +35,7 @@ rule sam_to_sorted_bam:
     message:
         "Convert {wildcards.experiment} {wildcards.accession} alignfile SAM to sorted BAM."
     shell:
-        "samtools sort {input} -o {output}"
+        "samtools sort {input} > {output}"
     
 
 rule create_bedgraphs:
@@ -66,7 +66,8 @@ rule DG_NG_assembly:
     params:
         outdir = "results/crssant/{experiment}/{accession}/",
         cluster = "cliques",
-        t_o = 0.2
+        t_o = 0.1,
+        covlimit = 1000
     threads:
         16
     conda:
@@ -75,7 +76,7 @@ rule DG_NG_assembly:
         "Assemble {wildcards.experiment} {wildcards.accession} alignments to DGs and NGs."
     shell:
         "python3 workflow/scripts/crssant.py -out {params.outdir} "
-        "-cluster {params.cluster} -n {threads} -t_o {params.t_o} "
+        "-cluster {params.cluster} -n {threads} -t_o {params.t_o} -covlimit {params.covlimit} "
         "{input.alignfile} {input.genesfile} {input.plus_bg},{input.minus_bg}"
 
 
