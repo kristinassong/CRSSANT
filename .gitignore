@@ -134,5 +134,6 @@ results/
 resources/fastq/
 resources/sra/
 resources/icSHAPE/
+resources/CoCo/
 resources/preprocessed_fastq/
 resources/genes.bed

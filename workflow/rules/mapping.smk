@@ -1,11 +1,30 @@
 ###############################################################
+# CoCo -- Corrected annotation
+###############################################################
+
+rule coco_ca:
+    input:
+        gtf = config["genome_gtf"],
+        coco_dir = rules.download_CoCo_git.output
+    output:
+        gtf_corrected = "resources/correct_annotation.gtf"
+    conda:
+        "../envs/coco.yaml"
+    message:
+        "Generate corrected annotation using CoCo."
+    shell:
+        "export PATH=$PWD/{input.coco_dir}/bin:$PATH && "
+        "python3 {input.coco_dir}/bin/coco.py ca {input.gtf} -o {output.gtf_corrected}"
+
+
+###############################################################
 # Map reads to the genome -- ROUND1
 ###############################################################
 
 rule STAR_index:
     input:
         fasta = config["genome_fasta"],
-        gtf = config["genome_gtf"]
+        gtf = rules.coco_ca.output.gtf_corrected
     output:
         directory("results/STAR/index")
     conda:
@@ -250,7 +269,7 @@ rule filter_spliced_short_gaps_gap1:
     output:
         "results/gaptypes/{experiment}/{accession}/{accession}_pri_gap1_filtered.sam"
     params:
-        annotation = config['genome_gtf'],
+        annotation = rules.coco_ca.output.gtf_corrected,
         idloc = 11,
         short = "yes"
     message:
@@ -265,7 +284,7 @@ rule filter_spliced_short_gaps_gapm:
     output:
         "results/gaptypes/{experiment}/{accession}/{accession}_pri_gapm_filtered.sam"
     params:
-        annotation = config['genome_gtf'],
+        annotation = rules.coco_ca.output.gtf_corrected,
         idloc = 11,
         short = "yes"
     message:

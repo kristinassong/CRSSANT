@@ -14,27 +14,32 @@ configfile: "config/config.yaml"
 ## Load rules
 #############################
 
-include: "rules/download.smk"
+#include: "rules/download_sra_toolkit.smk" # download FASTQ files using sra-toolkit (longer but url not needed)
+include: "rules/download_wget.smk" # download FASTQ files via wget (faster but need to get url from SRA explorer)
 include: "rules/preprocessing.smk"
-include: "rules/mapping.smk"
-include: "rules/stats.smk"
-include: "rules/crssant.smk"
+#include: "rules/mapping.smk"
+#include: "rules/stats.smk"
+#include: "rules/crssant.smk"
 
 
 rule all:
     input:
-        #### Step 1: Download FASTQ files from GEO -- may require multiple runs
-        PARIS_fq = expand("resources/fastq/PARIS/{accession}.fastq.gz",accession=config['PARIS']),
-        PARIS2_fq = expand("resources/fastq/PARIS2/{accession}.fastq.gz",accession=config['PARIS2']),
-        LIGR_fq = expand("resources/fastq/LIGR/{accession}.fastq.gz",accession=config['LIGR']),
-        SPLASH_fq = expand("resources/fastq/SPLASH/{accession}.fastq.gz",accession=config['SPLASH']),
-        #### Step 2: Download git repo -- use profile_local
-        icSHAPE_git = "resources/icSHAPE/icSHAPE_pipeline.pl",
-        #### Step 3: CRSSANT
+        #### Step 1: Download FASTQ files and git repos
+        # OPTION 1: Download FASTQ files via sra-toolkit -- profile_slurm
+        #PARIS_fq = expand("resources/fastq/PARIS/{accession}.fastq.gz",accession=config['PARIS']),
+        #PARIS2_fq = expand("resources/fastq/PARIS2/{accession}.fastq.gz",accession=config['PARIS2']),
+        #LIGR_seq_fq = expand("resources/fastq/LIGR_seq/{accession}.fastq.gz",accession=config['LIGR_seq']),
+        #SPLASH_fq = expand("resources/fastq/SPLASH/{accession}.fastq.gz",accession=config['SPLASH']),
+        # OPTION 2: Download FASTQ files via wget -- profile_local
+        #fq = "resources/fastq/download_status.txt",
+        # Git repos -- use profile_local
+        icSHAPE_git = directory('resources/icSHAPE'),
+        CoCo_git = directory('resources/CoCo'),
+        #### Step 2: CRSSANT
         # FastQC
         PARIS_qc = expand("results/fastqc/{qc_type}/PARIS/{accession}_fastqc.html",accession=config['PARIS'],qc_type=['raw','preprocessed']),
         PARIS2_qc = expand("results/fastqc/{qc_type}/PARIS2/{accession}_fastqc.html",accession=config['PARIS2'],qc_type=['raw','preprocessed']),
-        LIGR_qc = expand("results/fastqc/preprocessed/LIGR/{accession}_fastqc.html",accession=config['LIGR']),
+        LIGR_seq_qc = expand("results/fastqc/preprocessed/LIGR_seq/{accession}_fastqc.html",accession=config['LIGR_seq']),
         SPLASH_qc = expand("results/fastqc/preprocessed/SPLASH/{accession}_fastqc.html",accession=config['SPLASH']),
         # Mapping stats
         #PARIS_len_stats = expand("results/stats/PARIS/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS'],stats=['seg','gap']),

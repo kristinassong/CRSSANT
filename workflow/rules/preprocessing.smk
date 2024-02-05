@@ -1,4 +1,6 @@
+###############################################################
 # PARIS & PARIS2
+###############################################################
 
 rule trim3_PARIS:
     input:
@@ -24,7 +26,7 @@ rule trim3_PARIS:
 
 rule read_collapse_PARIS:
     input:
-        icSHAPE_dir = rules.download_icSHAPE_git.output.dir,
+        icSHAPE_dir = rules.download_icSHAPE_git.output,
         fq = rules.trim3_PARIS.output
     output:
         "resources/preprocessed_fastq/PARIS/{accession}_trim3_nodup.fastq"
@@ -82,7 +84,7 @@ rule trim3_PARIS2:
 
 rule read_collapse_PARIS2:
     input:
-        icSHAPE_dir = rules.download_icSHAPE_git.output.dir,
+        icSHAPE_dir = rules.download_icSHAPE_git.output,
         fq = rules.trim3_PARIS2.output
     output:
         "resources/preprocessed_fastq/PARIS2/{accession}_trim3_nodup.fastq"
@@ -116,19 +118,24 @@ rule trim5_PARIS2:
         "HEADCROP:17 MINLEN:20"
 
 
-# LIGR-seq
+###############################################################
+# LIGR-seq -- Already preprocessed
+###############################################################
 
-rule unzip_LIGR:
+rule unzip_LIGR_seq:
     input:
-        fq_gz = "resources/fastq/LIGR/{accession}.fastq.gz"
+        fq_gz = "resources/fastq/LIGR_seq/{accession}.fastq.gz"
     output:
-        "resources/preprocessed_fastq/LIGR/{accession}_preprocessed.fastq"
+        "resources/preprocessed_fastq/LIGR_seq/{accession}_preprocessed.fastq"
     message:
         "Unzip LIGR-seq {wildcards.accession} FASTQ file. Already preprocessed."
     shell:
         "gunzip -f -c {input} > {output}"
 
-# SPLASH
+
+###############################################################
+# SPLASH -- Already preprocessed
+###############################################################
 
 rule unzip_SPLASH:
     input:
@@ -141,7 +148,9 @@ rule unzip_SPLASH:
         "gunzip -f -c {input} > {output}"
 
 
+###############################################################
 # FASTQC
+###############################################################
 
 rule fastqc_raw:
     input:
@@ -167,7 +176,7 @@ rule fastqc_raw:
 rule preprocessing_status:
     input:
         expand(rules.unzip_SPLASH.output,accession=config['SPLASH']),
-        expand(rules.unzip_LIGR.output,accession=config['LIGR']),
+        expand(rules.unzip_LIGR_seq.output,accession=config['LIGR_seq']),
         expand(rules.trim5_PARIS.output,accession=config['PARIS']),
         expand(rules.trim5_PARIS2.output,accession=config['PARIS2'])
     output:

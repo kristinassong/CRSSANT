@@ -12,7 +12,7 @@ rule combine_gap1filter_trans:
 
 rule create_genesfile:
     input:
-        config['genome_gtf']
+        rules.coco_ca.output.gtf_corrected
     output:
         "resources/genes.bed"
     params:
