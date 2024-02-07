@@ -71,6 +71,8 @@ snakemake -n
 To run this Snakemake workflow, simply run the following code from `CRSSANT/`.
 ```
 snakemake --profile profile_slurm
+OR
+snakemake --profile profile_local
 ```
 
 Please see below for more details on the CRSSANT pipeline. If you have any specific questions regarding this Snakemake workflow, please contact [Kristina Sungeun Song](mailto:kristina.song@usherbrooke.ca). Questions on the technicalities of CRSSANT should be addressed to the original authors: [Zhang et al. 2022 Genome Research](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9104705/).
