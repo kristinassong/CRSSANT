@@ -8,6 +8,8 @@ rule wget_fq:
     shell:
         "echo \'Downloading fastq files from GEO...\' > {output} && "
         "while IFS=\'\t\' read exp url; do "
+        "date >> {output}; "
+        "echo $exp $url >> {output}; "
         "wget -P resources/fastq/$exp $url; "
         "done < {input} && "
         "echo \'Download complete\' >> {output}"

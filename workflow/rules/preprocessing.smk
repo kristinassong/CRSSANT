@@ -1,20 +1,16 @@
-###############################################################
-# PARIS & PARIS2
-###############################################################
-
-rule trim3_PARIS:
+rule trim3:
     input:
-        fq_gz = "resources/fastq/PARIS/{accession}.fastq.gz"
+        fq_gz = "resources/fastq/{experiment}/{accession}.fastq.gz"
     output:
-        "resources/preprocessed_fastq/PARIS/{accession}.trim3.fastq"
+        "resources/preprocessed_fastq/{experiment}/{accession}.trim3.fastq"
     threads:
         32
     conda:
         "../envs/trimmomatic.yaml"
     log:
-        "results/logs/trimmomatic/PARIS/{accession}_trim3.log"
+        "results/logs/trimmomatic/{experiment}/{accession}_trim3.log"
     message:
-        "3'-end adapter trimming for PARIS {wildcards.accession} via Trimmomatic."
+        "3'-end adapter trimming for {wildcards.experiment} {wildcards.accession} via Trimmomatic."
     shell:
         "trimmomatic SE "
         "-threads {threads} "
@@ -24,128 +20,43 @@ rule trim3_PARIS:
         "ILLUMINACLIP:resources/adapters.fa:3:20:10 SLIDINGWINDOW:4:20 MINLEN:18"
 
 
-rule read_collapse_PARIS:
+rule read_collapse:
     input:
         icSHAPE_dir = rules.download_icSHAPE_git.output,
-        fq = rules.trim3_PARIS.output
+        fq = rules.trim3.output
     output:
-        "resources/preprocessed_fastq/PARIS/{accession}_trim3_nodup.fastq"
+        "resources/preprocessed_fastq/{experiment}/{accession}_trim3_nodup.fastq"
     conda:
         "../envs/git.yaml"
     message:
-        "Remove PCR duplicates from PARIS {wildcards.accession}."
+        "Remove PCR duplicates from {wildcards.experiment} {wildcards.accession}."
     shell:
         "perl {input.icSHAPE_dir}/scripts/readCollapse.pl -U {input.fq} -o {output}"
 
 
-rule trim5_PARIS:
+rule trim5:
     input:
-        rules.read_collapse_PARIS.output
+        rules.read_collapse.output
     output:
-        "resources/preprocessed_fastq/PARIS/{accession}_preprocessed.fastq"
+        "resources/preprocessed_fastq/{experiment}/{accession}.fastq"
+    params:
+        tmp_fq = "resources/preprocessed_fastq/{experiment}/{accession}_trim3"
     threads:
         32
     conda:
         "../envs/trimmomatic.yaml"
     log:
-        "results/logs/trimmomatic/PARIS/{accession}_trim5.log"
+        "results/logs/trimmomatic/{experiment}/{accession}_trim5.log"
     message:
-        "5'-end adapter trimming for PARIS {wildcards.accession} via Trimmomatic."
+        "5'-end adapter trimming for {wildcards.experiment} {wildcards.accession} via Trimmomatic."
     shell:
         "trimmomatic SE "
         "-threads {threads} "
         "-phred33 "
         "-trimlog {log} "
         "{input} {output} "
-        "HEADCROP:17 MINLEN:20"
-
-
-rule trim3_PARIS2:
-    input:
-        fq_gz = "resources/fastq/PARIS2/{accession}.fastq.gz"
-    output:
-        "resources/preprocessed_fastq/PARIS2/{accession}.trim3.fastq"
-    threads:
-        32
-    conda:
-        "../envs/trimmomatic.yaml"
-    log:
-        "results/logs/trimmomatic/PARIS2/{accession}_trim3.log"
-    message:
-        "3'-end adapter trimming for PARIS2 {wildcards.accession} via Trimmomatic."
-    shell:
-        "trimmomatic SE "
-        "-threads {threads} "
-        "-phred33 "
-        "-trimlog {log} "
-        "{input} {output} "
-        "ILLUMINACLIP:resources/adapters.fa:3:20:10 SLIDINGWINDOW:4:20 MINLEN:18"
-
-
-rule read_collapse_PARIS2:
-    input:
-        icSHAPE_dir = rules.download_icSHAPE_git.output,
-        fq = rules.trim3_PARIS2.output
-    output:
-        "resources/preprocessed_fastq/PARIS2/{accession}_trim3_nodup.fastq"
-    conda:
-        "../envs/git.yaml"
-    message:
-        "Remove PCR duplicates from PARIS2 {wildcards.accession}."
-    shell:
-        "perl {input.icSHAPE_dir}/scripts/readCollapse.pl -U {input.fq} -o {output}"
-
-
-rule trim5_PARIS2:
-    input:
-        rules.read_collapse_PARIS2.output
-    output:
-        "resources/preprocessed_fastq/PARIS2/{accession}_preprocessed.fastq"
-    threads:
-        32
-    conda:
-        "../envs/trimmomatic.yaml"
-    log:
-        "results/logs/trimmomatic/PARIS2/{accession}_trim5.log"
-    message:
-        "5'-end adapter trimming for PARIS2 {wildcards.accession} via Trimmomatic."
-    shell:
-        "trimmomatic SE "
-        "-threads {threads} "
-        "-phred33 "
-        "-trimlog {log} "
-        "{input} {output} "
-        "HEADCROP:17 MINLEN:20"
-
-
-###############################################################
-# LIGR-seq -- Already preprocessed
-###############################################################
-
-rule unzip_LIGR_seq:
-    input:
-        fq_gz = "resources/fastq/LIGR_seq/{accession}.fastq.gz"
-    output:
-        "resources/preprocessed_fastq/LIGR_seq/{accession}_preprocessed.fastq"
-    message:
-        "Unzip LIGR-seq {wildcards.accession} FASTQ file. Already preprocessed."
-    shell:
-        "gunzip -f -c {input} > {output}"
-
-
-###############################################################
-# SPLASH -- Already preprocessed
-###############################################################
-
-rule unzip_SPLASH:
-    input:
-        fq_gz = "resources/fastq/SPLASH/{accession}.fastq.gz"
-    output:
-        "resources/preprocessed_fastq/SPLASH/{accession}_preprocessed.fastq"
-    message:
-        "Unzip SPLASH {wildcards.accession} FASTQ file. Already preprocessed."
-    shell:
-        "gunzip -f -c {input} > {output}"
+        "HEADCROP:17 MINLEN:20 && "
+        "rm {params}* {params}.fastq"
 
 
 ###############################################################
@@ -173,23 +84,9 @@ rule fastqc_raw:
         "&> {log}"
 
 
-rule preprocessing_status:
-    input:
-        expand(rules.unzip_SPLASH.output,accession=config['SPLASH']),
-        expand(rules.unzip_LIGR_seq.output,accession=config['LIGR_seq']),
-        expand(rules.trim5_PARIS.output,accession=config['PARIS']),
-        expand(rules.trim5_PARIS2.output,accession=config['PARIS2'])
-    output:
-        "resources/preprocessed_fastq/preprocessing_status.txt"
-    shell:
-        "echo date > {output} && "
-        "echo \'All preprocessing steps complete. Run FASTQC.\' >> {output}"
-
-
 rule fastqc_preprocessed:
     input:
-        status = rules.preprocessing_status.output,
-        fq = "resources/preprocessed_fastq/{experiment}/{accession}_preprocessed.fastq"
+        rules.trim5.output
     output:
         "results/fastqc/preprocessed/{experiment}/{accession}_fastqc.html"
     params:
@@ -204,5 +101,5 @@ rule fastqc_preprocessed:
         "fastqc "
         "--outdir {params} "
         "--format fastq "
-        "{input.fq} "
+        "{input} "
         "&> {log}"
