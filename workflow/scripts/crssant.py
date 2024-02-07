@@ -137,7 +137,7 @@ def line2info(line,genesdict):
     """convert 1 chimeric alignment line to a list of information"""
     align=line.split()
     RNAME,POS,CIGAR=align[2],int(align[3]),align[5]
-    Rlen=sum([int(i[:-1]) for i in re.findall('\d+[MD=X]',CIGAR)])
+    Rlen=sum([int(i[:-1]) for i in re.findall(r'\d+[MD=X]',CIGAR)])
     STRAND='-' if '{0:012b}'.format(int(align[1]))[-5]=='1' else '+'
     info = [RNAME,STRAND,POS,POS+Rlen,line,[]]
     for i in [floor(POS/10)*10,ceil((POS+Rlen)/10)*10]:
@@ -169,9 +169,9 @@ def getalign(readsdict, genesdict):
             align=line.split()
             RNAME,POS,CIGAR=align[2],int(align[3]),align[5]
             STRAND='-'if'{0:012b}'.format(int(align[1]))[-5]=='1' else '+'
-            glen=int(re.findall('\d+N', CIGAR)[0][:-1]) #gap length
+            glen=int(re.findall(r'\d+N', CIGAR)[0][:-1]) #gap length
             segs=[i.rstrip('0123456789') for i in CIGAR.split('N')]
-            Rlens=[sum([int(i[:-1]) for i in re.findall('\d+[MD=X]',seg)])
+            Rlens=[sum([int(i[:-1]) for i in re.findall(r'\d+[MD=X]',seg)])
                    for seg in segs]
             POS2=POS+glen+Rlens[0]
             info1 = [RNAME,STRAND,POS,POS+Rlens[0],line,[]]
@@ -278,8 +278,8 @@ def process_cigar(cigar_str): #verified. all CIGAR operations considered.
     requires re. 
     """
     # Parse the cigar string into operations (ops) and operation lengths (lens)
-    ops_raw = re.findall('\D+', cigar_str)
-    lens_strs = re.findall('\d+', cigar_str)
+    ops_raw = re.findall(r'\D+', cigar_str)
+    lens_strs = re.findall(r'\d+', cigar_str)
     lens_raw = [int(i) for i in lens_strs]
     # Merge duplicate consecutive operations
     ops, lens = [], []; lens.append(lens_raw[0]); ops.append(ops_raw[0])

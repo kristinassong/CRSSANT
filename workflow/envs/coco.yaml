@@ -3,8 +3,8 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - subread=2.0.6
-  - bedtools=2.31.1
-  - samtools=1.19.2
-  - pandas=2.1.4
-  - numpy=1.26.3
+  - subread=2.0.0
+  - bedtools=2.29.2
+  - samtools=1.10
+  - pandas=0.24.2
+  - numpy=1.17.2 

@@ -98,12 +98,12 @@ def CIGARdiv(CIGAR):
     #example: 
     #Glen,gaps,gaplens,segs,Mlens,Qlens,Rlens = CIGARdiv(CIGAR)
     #or replace unwanted output with '_' 
-    gaps=re.findall('\d+N', CIGAR)
+    gaps=re.findall(r'\d+N', CIGAR)
     gaplens=[int(gap[:-1]) for gap in gaps] #gap lengths 
     segs=[i.rstrip('0123456789') for i in CIGAR.split('N')]
-    Mlens=[sum([int(i[:-1]) for i in re.findall('\d+[M=X]',s)]) for s in segs]
-    Rlens=[sum([int(i[:-1]) for i in re.findall('\d+[MD=X]',s)]) for s in segs]
-    Qlens=[sum([int(i[:-1]) for i in re.findall('\d+[MIS=X]',s)]) for s in segs]
+    Mlens=[sum([int(i[:-1]) for i in re.findall(r'\d+[M=X]',s)]) for s in segs]
+    Rlens=[sum([int(i[:-1]) for i in re.findall(r'\d+[MD=X]',s)]) for s in segs]
+    Qlens=[sum([int(i[:-1]) for i in re.findall(r'\d+[MIS=X]',s)]) for s in segs]
     Glen=sum(gaplens+Rlens)
     return Glen, gaps, gaplens, segs, Mlens, Qlens, Rlens
 

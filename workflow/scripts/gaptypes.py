@@ -174,12 +174,12 @@ def CIGARdiv(CIGAR):
     #example: 
     #Glen,gaps,gaplens,segs,Mlens,Qlens,Rlens = CIGARdiv(CIGAR)
     #or replace unwanted output with '_' 
-    gaps=re.findall('\d+N', CIGAR)
+    gaps=re.findall(r'\d+N', CIGAR)
     gaplens=[int(gap[:-1]) for gap in gaps] #gap lengths 
     segs=[i.rstrip('0123456789') for i in CIGAR.split('N')]
-    Mlens=[sum([int(i[:-1]) for i in re.findall('\d+[M=X]',s)]) for s in segs]
-    Rlens=[sum([int(i[:-1]) for i in re.findall('\d+[MD=X]',s)]) for s in segs]
-    Qlens=[sum([int(i[:-1]) for i in re.findall('\d+[MIS=X]',s)]) for s in segs]
+    Mlens=[sum([int(i[:-1]) for i in re.findall(r'\d+[M=X]',s)]) for s in segs]
+    Rlens=[sum([int(i[:-1]) for i in re.findall(r'\d+[MD=X]',s)]) for s in segs]
+    Qlens=[sum([int(i[:-1]) for i in re.findall(r'\d+[MIS=X]',s)]) for s in segs]
     Glen=sum(gaplens+Rlens)
     return Glen, gaps, gaplens, segs, Mlens, Qlens, Rlens
 
@@ -193,7 +193,7 @@ def mergeCIGAR(CIGAR):
     #calculate the bounds of the query, excluding the terminal SH
     #merge all operations that consume the query, i.e. MI=X
     #example: 1S2M3N4M5I6M7S -> 1S2M4M5I6M7S -> 1S17M7S (17nt query) -> [1,18]
-    ops = re.findall('\d+[MISH=X]', CIGAR) #all that consume query
+    ops = re.findall(r'\d+[MISH=X]', CIGAR) #all that consume query
     newops = [ops[0]]
     for op in ops[1:]: #concatenate all internal ops that consume query [MIS=X]
         if newops[-1][-1] in "SH" and op[-1] in "MI=X": newops.append(op)
@@ -211,8 +211,8 @@ def mergeCIGAR(CIGAR):
 def chimoverlap(align1, align2): #requires re and getOverlap
     #determines whether the two fragments overlap on the reference. 
     #assume the 2 alignments on the same chr and strand. Gaps included
-    Rlenall1 = sum([int(i[:-1]) for i in re.findall('\d+[MDN=X]', align1[5])])
-    Rlenall2 = sum([int(i[:-1]) for i in re.findall('\d+[MDN=X]', align2[5])])
+    Rlenall1 = sum([int(i[:-1]) for i in re.findall(r'\d+[MDN=X]', align1[5])])
+    Rlenall2 = sum([int(i[:-1]) for i in re.findall(r'\d+[MDN=X]', align2[5])])
     match1 = [int(align1[3]), int(align1[3]) + Rlenall1]
     match2 = [int(align2[3]), int(align2[3]) + Rlenall2]
     return getOverlap(match1, match2)
@@ -299,7 +299,7 @@ def trimclip(line): #this function returns the new CIGAR, SEQ and QUAL
     """
     align = line.split('\t')
     CIGAR,SEQ,QUAL = align[5],align[9],align[10]
-    ops = re.findall('\d+[MINDSH=X]', CIGAR)
+    ops = re.findall(r'\d+[MINDSH=X]', CIGAR)
     CIGARnew = ''.join([i for i in ops if i[-1] not in 'SH'])
     SEQnew, QUALnew = SEQ, QUAL
     if ops[0][-1]=='S':
@@ -316,7 +316,7 @@ def trimclip2line(line): #this function returns the new alignment in a string
     """
     align = line.split('\t')
     CIGAR,SEQ,QUAL = align[5],align[9],align[10]
-    ops = re.findall('\d+[MINDSH=X]', CIGAR)
+    ops = re.findall(r'\d+[MINDSH=X]', CIGAR)
     CIGARnew = ''.join([i for i in ops if i[-1] not in 'SH'])
     SEQnew, QUALnew, alignnew = SEQ, QUAL, align
     if ops[0][-1]=='S':
@@ -409,7 +409,7 @@ for QNAME in nonconreads:
     #unnecessary to run this test for STAR output using my new parameters.
     for line in nonconreads[QNAME]: #only "MINSH=X" operations allowed
         CIGAR = line.split()[5]
-        if re.findall('\d+[DP]',CIGAR): print "Unexpected:",CIGAR;sys.exit()
+        if re.findall(r'\d+[DP]',CIGAR): print "Unexpected:",CIGAR;sys.exit()
     """        
     ##############B. remove homopolymers artifacts. 
     SEQ = nonconreads[QNAME][0].split()[9]
@@ -607,8 +607,8 @@ for QNAME in chimdiscpair:
     align1,align2 = line1.split('\t'),line2.split('\t')
     lineL,lineR=(line1,line2) if int(align1[3])<int(align2[3])else(line2,line1)
     alignL,alignR = lineL.split(),lineR.split()
-    CIGARL = re.findall('\d+[MINDSH=X]', alignL[5]) #left CIGAR 
-    CIGARR = re.findall('\d+[MINDSH=X]', alignR[5]) #right CIGAR
+    CIGARL = re.findall(r'\d+[MINDSH=X]', alignL[5]) #left CIGAR 
+    CIGARR = re.findall(r'\d+[MINDSH=X]', alignR[5]) #right CIGAR
 
     ##############B. process foward arrangement in this step
     #only need to rearrange the CIGAR, no need to rearrange SEQ/QUAL
@@ -622,7 +622,7 @@ for QNAME in chimdiscpair:
         CIGARF = ''.join(CIGARL+[str(gaplength)+'N']+CIGARR)
         SEQF,QUALF = alignL[9]+alignR[9],alignL[10]+alignR[10]
         alignF = align1[:5]+ [CIGARF]+align1[6:9]+[SEQF,QUALF]+align1[11:]
-        gaps = re.findall('\d+N', CIGARF)
+        gaps = re.findall(r'\d+N', CIGARF)
         if len(gaps)==1: gap1align.append('\t'.join(alignF)); gap1count+=1
         else: gapmalign.append('\t'.join(alignF)); gapmcount+=1
         continue
@@ -631,7 +631,7 @@ for QNAME in chimdiscpair:
     CIGARB = ''.join(CIGARL+[str(gaplength)+'N']+CIGARR)
     SEQB,QUALB = alignL[9]+alignR[9],alignL[10]+alignR[10]
     alignB = alignL[:5]+[CIGARB]+align1[6:9]+[SEQB,QUALB]+align1[11:]
-    gaps = re.findall('\d+N', CIGARB)
+    gaps = re.findall(r'\d+N', CIGARB)
     if len(gaps)==1: gap1align.append('\t'.join(alignB)); gap1count+=1
     else: gapmalign.append('\t'.join(alignB)); gapmcount+=1
     
@@ -735,8 +735,8 @@ for QNAME in chimoveralign:
         badcount+=2;badalign.append(line1+line2);continue #ignore overlap w/ N/I
 
     ###B. convert each nt overlap to 2I1D, consuming 2nt query and 1nt reference
-    Rleft =sum([int(i[:-1]) for i in re.findall('\d+[MND=X]', alignL[5])])
-    Rright =sum([int(i[:-1]) for i in re.findall('\d+[MND=X]', alignR[5])])    
+    Rleft =sum([int(i[:-1]) for i in re.findall(r'\d+[MND=X]', alignL[5])])
+    Rright =sum([int(i[:-1]) for i in re.findall(r'\d+[MND=X]', alignR[5])])    
     overL = abs(POS1-POS2)
     overR = abs(POSR+Rright-POSL-Rleft)
     overlaplen = getOverlap([POSL,POSL+Rleft],[POSR,POSR+Rright])

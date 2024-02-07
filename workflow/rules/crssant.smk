@@ -15,28 +15,32 @@ rule create_genesfile:
         rules.coco_ca.output.gtf_corrected
     output:
         "resources/genes.bed"
-    params:
-        info_type = "gene"
-    conda:
-        "../envs/gtf.yaml"
     message:
         "Create a bed file that contains a list of all genes in the genome."
-    script:
-        "../scripts/genes.py"
+    shell:
+        "grep -P \'\tgene\t\' {input} | " 
+        "cut -f1,4,5,7,9 | sed \'s/[[:space:]]/\t/g\' | "
+        "sed \'s/[;|\"]//g\' | awk -F $\'\t\' \'BEGIN {{OFS=FS}} {{print $1,$2-1,$3,$8,\"1000\",$4}}\' | "
+        "sed -n \'/^[0-9,X,Y,MT]/Ip\' | awk \'$1 !~ /_/\' | "
+        "sort -k1,1 -k2,2n > {output}"
 
 
 rule sam_to_sorted_bam:
     input:
         rules.combine_gap1filter_trans.output
     output:
-        "results/crssant/{experiment}/{accession}/{accession}_pri_crssant.bam"
+        "results/crssant/{experiment}/{accession}/{accession}_pri_crssant_sorted.bam"
+    params:
+        tmp_bam = "results/crssant/{experiment}/{accession}/{accession}_pri_crssant.bam"
     conda:
         "../envs/mapping.yaml"
     message:
         "Convert {wildcards.experiment} {wildcards.accession} alignfile SAM to sorted BAM."
     shell:
-        "samtools sort {input} > {output}"
-    
+        "samtools view -bS -o {params.tmp_bam} {input} && "
+        "samtools sort -o {output} {params.tmp_bam} && "
+        "samtools index {output}"
+
 
 rule create_bedgraphs:
     input:
@@ -51,8 +55,8 @@ rule create_bedgraphs:
     message:
         "Create {wildcards.experiment} {wildcards.accession} strand-separated bedgraphs."
     shell:
-        "bedtools genomecov -bg -split -strand + -ibam {input} -g {params} > {output.plus_bg} && "
-        "bedtools genomecov -bg -split -strand - -ibam {input} -g {params} > {output.minus_bg}"
+        "bedtools genomecov -bg -split -strand + -ibam {input} -g {params} | sed -n \'/^[0-9,X,Y,MT]/Ip\' | awk \'$1 !~ /_/\' | sort -k1,1 -k2,2n > {output.plus_bg} && "
+        "bedtools genomecov -bg -split -strand - -ibam {input} -g {params} | sed -n \'/^[0-9,X,Y,MT]/Ip\' | awk \'$1 !~ /_/\' | sort -k1,1 -k2,2n > {output.minus_bg}"
 
 
 rule DG_NG_assembly:
@@ -66,8 +70,7 @@ rule DG_NG_assembly:
     params:
         outdir = "results/crssant/{experiment}/{accession}/",
         cluster = "cliques",
-        t_o = 0.1,
-        covlimit = 1000
+        t_o = 0.1
     threads:
         16
     conda:
@@ -76,19 +79,5 @@ rule DG_NG_assembly:
         "Assemble {wildcards.experiment} {wildcards.accession} alignments to DGs and NGs."
     shell:
         "python3 workflow/scripts/crssant.py -out {params.outdir} "
-        "-cluster {params.cluster} -n {threads} -t_o {params.t_o} -covlimit {params.covlimit} "
+        "-cluster {params.cluster} -n {threads} -t_o {params.t_o} "
         "{input.alignfile} {input.genesfile} {input.plus_bg},{input.minus_bg}"
-
-
-rule TG_assembly:
-    input:
-        bedpe = rules.DG_NG_assembly.output.bedpe,
-        gapm = rules.filter_spliced_short_gaps_gapm.output
-    output:
-        "results/crssant/{experiment}/{accession}/{accession}_pri_gapm_filtered_tg.sam"
-    conda:
-        "../envs/crssant.yaml"
-    message:
-        "Assemble tri-segment groups from {wildcards.experiment} {wildcards.accession} gapm alignments."
-    script:
-        "../scripts/gapmcluster.py"

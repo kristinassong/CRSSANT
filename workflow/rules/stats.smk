@@ -19,30 +19,14 @@ rule segment_stats_I:
     input:
         rules.merge_gap1_gapm_trans.output
     output:
-        "results/stats/{experiment}/{accession}/{accession}_seglen.list"
-    params:
-        file_type = "sam"
-    conda:
-        "../envs/matplotlib.yaml"
-    message:
-        "Generate {wildcards.experiment} {wildcards.accession} arm length distribution - Part I (Produce a list of numbers)."
-    script:
-        "../scripts/seglendist.py"
-
-
-rule segment_stats_II:
-    input:
-        rules.segment_stats_I.output
-    output:
         "results/stats/{experiment}/{accession}/{accession}_seglen.pdf"
-    params:
-        file_type = "list"
     conda:
         "../envs/matplotlib.yaml"
     message:
-        "Generate {wildcards.experiment} {wildcards.accession} arm length distribution - Part II (Produce a cumulative distribution histogram)."
-    script:
-        "../scripts/seglendist.py"
+        "Generate {wildcards.experiment} {wildcards.accession} arm length distribution."
+    shell:
+        "python3 workflow/scripts/seglendist.py {input} {output} && "
+        "rm -f {input}"
 
 
 ###############################################################
@@ -65,29 +49,11 @@ rule gap_stats_I:
     input:
         rules.merge_gap1_gapm.output
     output:
-        "results/stats/{experiment}/{accession}/{accession}_gaplen.list"
-    params:
-        file_type = "sam",
-        gap = "all"
-    conda:
-        "../envs/matplotlib.yaml"
-    message:
-        "Generate {wildcards.experiment} {wildcards.accession} gap length distribution - Part I (Produce a list of numbers)."
-    script:
-        "../scripts/gaplendist.py"
-
-
-rule gap_stats_II:
-    input:
-        rules.gap_stats_I.output
-    output:
         "results/stats/{experiment}/{accession}/{accession}_gaplen.pdf"
-    params:
-        file_type = "list",
-        gap = "all"
     conda:
         "../envs/matplotlib.yaml"
     message:
-        "Generate {wildcards.experiment} {wildcards.accession} gap length distribution - Part II (Produce a cumulative distribution histogram)."
-    script:
-        "../scripts/gaplendist.py"
+        "Generate {wildcards.experiment} {wildcards.accession} gap length distribution."
+    shell:
+        "python3 workflow/scripts/gaplendist.py {input} {output} 100 && "
+        "rm -f {input}"

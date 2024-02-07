@@ -52,8 +52,8 @@ for line in insam:
        len(record)>=21 and "SA:Z" in line.split()[20]:
         continue #ignore secondary (FLAG=256) and chiastic alignments (SA:Z). 
     CIGAR = line.split()[5]
-    subMS = re.findall('\d+[MS]', CIGAR) #substrings for M and S
-    softs = re.findall('\d+S', CIGAR)
+    subMS = re.findall(r'\d+[MS]', CIGAR) #substrings for M and S
+    softs = re.findall(r'\d+S', CIGAR)
     softslen = [int(i[:-1]) for i in softs]
     if softslen and max(softslen) >= minlen:
         record = line.split()

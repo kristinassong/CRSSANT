@@ -12,22 +12,12 @@ __default__:
   error: results/logs/slurmout/{rule}.{wildcards}.err
 
 
-trim3_PARIS:
+trim3:
   time: 600
   cpus-per-task: 32
   mem: 32G
 
-trim5_PARIS:
-  time: 600
-  cpus-per-task: 32
-  mem: 32G
-
-trim3_PARIS2:
-  time: 600
-  cpus-per-task: 32
-  mem: 32G
-
-trim5_PARIS2:
+trim5:
   time: 600
   cpus-per-task: 32
   mem: 32G
@@ -65,4 +55,7 @@ DG_NG_assembly:
 TG_assembly:
   cpus-per-task: 16
   mem: 128G
+  time: 600
+
+filter_spliced_short_gaps_gap1:
   time: 600

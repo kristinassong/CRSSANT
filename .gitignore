@@ -137,3 +137,4 @@ resources/icSHAPE/
 resources/CoCo/
 resources/preprocessed_fastq/
 resources/genes.bed
+resources/*.gtf

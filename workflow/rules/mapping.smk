@@ -23,8 +23,7 @@ rule coco_ca:
 
 rule STAR_index:
     input:
-        fasta = config["genome_fasta"],
-        gtf = rules.coco_ca.output.gtf_corrected
+        fasta = config["genome_fasta"]
     output:
         directory("results/STAR/index")
     conda:
@@ -40,14 +39,14 @@ rule STAR_index:
         "--runMode genomeGenerate "
         "--genomeDir {output} "
         "--genomeFastaFiles {input.fasta} "
-        "--sjdbGTFfile {input.gtf} "
-        "--sjdbOverhang 99 "
+        "--genomeSAindexNbases 14 "
+        "--genomeChrBinNbits 18 "
         "&> {log}"
 
 
 rule STAR_align_1:
     input:
-        fq = "resources/preprocessed_fastq/{experiment}/{accession}_preprocessed.fastq",
+        fq = rules.trim5.output,
         idx = rules.STAR_index.output
     output:
         "results/STAR/{experiment}/{accession}/{accession}_1_Aligned.sortedByCoord.out.bam"
@@ -68,13 +67,12 @@ rule STAR_align_1:
         "--outFileNamePrefix {params.out_prefix} "
         "--runThreadN {threads} --genomeLoad NoSharedMemory --outReadsUnmapped Fastx  "
         "--outFilterMultimapNmax 10 --outFilterScoreMinOverLread 0 "
-        "--outFilterMatchNminOverLread 0 --outSAMattributes All "
+        "--outSAMattributes All "
         "--outSAMtype BAM Unsorted SortedByCoordinate --alignIntronMin 1 --scoreGap 0 "
         "--scoreGapNoncan 0 --scoreGapGCAG 0 --scoreGapATAC 0 "
-        "--scoreGenomicLengthLog2scale -1 --chimFilter None --chimOutType WithinBAM HardClip "
+        "--scoreGenomicLengthLog2scale -1 --chimOutType WithinBAM HardClip "
         "--chimSegmentMin 5 --chimJunctionOverhangMin 5 --chimScoreJunctionNonGTAG 0 "
         "-- chimScoreDropMax 80 --chimNonchimScoreDropMin 20 "
-        "--limitOutSJcollapsed 10000000 --limitIObufferSize 1500000000 "
         "&> {log}"
 
 
@@ -131,7 +129,7 @@ rule softreverse:
     input:
         rules.classify_alignments_1.output.cont
     output:
-        "resources/preprocessed_fastq/{experiment}/{accession}_preprocessed.softrev.fastq"
+        "resources/preprocessed_fastq/{experiment}/{accession}.softrev.fastq"
     message:
         "Rearrange {wildcards.experiment} {wildcards.accession} softclipped continuous alignments."
     script:
@@ -161,13 +159,12 @@ rule STAR_align_2:
         "--outFileNamePrefix {params.out_prefix} "
         "--runThreadN {threads} --genomeLoad NoSharedMemory --outReadsUnmapped Fastx  "
         "--outFilterMultimapNmax 10 --outFilterScoreMinOverLread 0 "
-        "--outFilterMatchNminOverLread 0 --outSAMattributes All "
+        "--outSAMattributes All "
         "--outSAMtype BAM Unsorted SortedByCoordinate --alignIntronMin 1 --scoreGap 0 "
         "--scoreGapNoncan 0 --scoreGapGCAG 0 --scoreGapATAC 0 "
-        "--scoreGenomicLengthLog2scale -1 --chimFilter None --chimOutType WithinBAM HardClip "
+        "--scoreGenomicLengthLog2scale -1 --chimOutType WithinBAM HardClip "
         "--chimSegmentMin 5 --chimJunctionOverhangMin 5 --chimScoreJunctionNonGTAG 0 "
         "-- chimScoreDropMax 80 --chimNonchimScoreDropMin 20 "
-        "--limitOutSJcollapsed 10000000 --limitIObufferSize 1500000000 "
         "&> {log}"
 
 
@@ -256,7 +253,9 @@ rule merge_sam:
         "cat {params.header} {params.gapm_tmp} > {output.gapm} && "
         "cat {params.header} {params.homo_tmp} > {output.homo} && "
         "cat {params.header} {params.trans_tmp} > {output.trans} && "
-        "rm -f {params.header} results/gaptypes/{wildcards.experiment}/{wildcards.accession}/*.tmp"
+        "rm -f {params.header} results/gaptypes/{wildcards.experiment}/{wildcards.accession}/*.tmp && "
+        "rm -f results/gaptypes/{wildcards.experiment}/{wildcards.accession}/{wildcards.accession}_1_* "
+        "results/gaptypes/{wildcards.experiment}/{wildcards.accession}/{wildcards.accession}_2_*"
 
 
 ###############################################################
@@ -270,7 +269,7 @@ rule filter_spliced_short_gaps_gap1:
         "results/gaptypes/{experiment}/{accession}/{accession}_pri_gap1_filtered.sam"
     params:
         annotation = rules.coco_ca.output.gtf_corrected,
-        idloc = 11,
+        idloc = 15,
         short = "yes"
     message:
         "Filter {wildcards.experiment} {wildcards.accession} gap1 alignments that have only splicing junctions and short 1-2 nt gaps due to artifacts."
@@ -285,7 +284,7 @@ rule filter_spliced_short_gaps_gapm:
         "results/gaptypes/{experiment}/{accession}/{accession}_pri_gapm_filtered.sam"
     params:
         annotation = rules.coco_ca.output.gtf_corrected,
-        idloc = 11,
+        idloc = 15,
         short = "yes"
     message:
         "Filter {wildcards.experiment} {wildcards.accession} gapm alignments that have only splicing junctions and short 1-2 nt gaps due to artifacts."

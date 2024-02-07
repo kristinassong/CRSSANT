@@ -43,7 +43,7 @@ def timenow(): return str(datetime.now())[:-7]
 def mergeCIGAR(CIGAR): 
     #merge all operations that consume the reference, i.e. MI=X
     #example: 1S2M3N4M5I6M7S -> 1S2M3N10M7S 
-    ops = re.findall('\d+[MNISH=X]', CIGAR) #all that consume query
+    ops = re.findall(r'\d+[MNISH=X]', CIGAR) #all that consume query
     newops = [ops[0]]
     for op in ops[1:]: #concatenate all internal ops that consume query [MIS=X
         if op[-1] not in "I=X":
