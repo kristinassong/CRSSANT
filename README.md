@@ -58,8 +58,8 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR3361017 | HEK293T Cells |
 
 The FASTQ files can be downloaded in two different ways:
-(i) `download_sra_toolkit.smk`: Only the `SRRXXXXXXX` run number is needed as input. Add the run number to `config/config.yaml` for the corresponding experiment. Note that multiple runs of the Snakemake workflow may be required to successfully download all the datasets.
-(ii) `download_wget.smk`: Both the `SRRXXXXXXX` run number and the download url (Available on [SRA Explorer](https://sra-explorer.info/#)) are required as input. Add the run number to `config/config.yaml` and the url to `resources/sra_ids.txt`.
+1. `download_sra_toolkit.smk`: Only the `SRRXXXXXXX` run number is needed as input. Add the run number to `config/config.yaml` for the corresponding experiment. Note that multiple runs of the Snakemake workflow may be required to successfully download all the datasets.
+2. `download_wget.smk`: Both the `SRRXXXXXXX` run number and the download url (Available on [SRA Explorer](https://sra-explorer.info/#)) are required as input. Add the run number to `config/config.yaml` and the url to `resources/sra_ids.txt`.
 
 We recommend verifying the download of all required datasets before moving onto the next steps of the CRSSANT pipeline. Make sure to comment out (#) the `.smk` file that you are not using in `Snakefile` (line 17-18).
 
