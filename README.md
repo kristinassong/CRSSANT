@@ -21,24 +21,35 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR2814765 | HEK293T Cells |
 
 **PARIS2**
-| Accession   | Sample Name   |
-| ----------- | ------------- |
-| SRR11624581 | HEK293T Cells |
-| SRR11624582 | HEK293T Cells |
-| SRR11624583 | HEK293T Cells |
-| SRR11624584 | HEK293T Cells |
-| SRR11624585 | HEK293T Cells |
-| SRR11624586 | HEK293T Cells |
-| SRR11624587 | HEK293T Cells |
-| SRR11624588 | HEK293T Cells |
+| Accession   | Sample Name            |
+| ----------- | ---------------------- |
+| SRR11624581 | HEK293T Cells - AMT    |
+| SRR11624582 | HEK293T Cells - AMT    |
+| SRR11624583 | HEK293T Cells - AMT    |
+| SRR11624584 | HEK293T Cells - AMT    |
+| SRR11624585 | HEK293T Cells - Amoto  |
+| SRR11624586 | HEK293T Cells - Amoto  |
+| SRR11624587 | HEK293T Cells - Amoto  |
+| SRR11624588 | HEK293T Cells - Amoto  |
+| SRR11624589 | HEK293T Cells - mRNA   |
+| SRR11951629 | HEK293T Cells - snoRNA |
 
 **SPLASH**
-| Accession  | Sample Name          |
-| ---------- | -------------------- |
-| SRR3404924 | Lymphoblastoid Cells |
-| SRR3404925 | Lymphoblastoid Cells |
-| SRR3404936 | Lymphoblastoid Cells |
-| SRR3404937 | Lymphoblastoid Cells |
+| Accession  | Sample Name                      |
+| ---------- | -------------------------------- |
+| SRR3404924 | Lymphoblastoid Cells - Total RNA |
+| SRR3404925 | Lymphoblastoid Cells - Total RNA |
+| SRR3404926 | hES Cells - PolyA                |
+| SRR3404927 | RA Cells - PolyA                 |
+| SRR3404928 | RA Cells - PolyA                 |
+| SRR3404936 | Lymphoblastoid Cells - Total RNA |
+| SRR3404937 | Lymphoblastoid Cells - Total RNA |
+| SRR3404938 | Lymphoblastoid Cells - snoRNA    |
+| SRR3404939 | Lymphoblastoid Cells - PolyA     |
+| SRR3404940 | Lymphoblastoid Cells - PolyA     |
+| SRR3404941 | Lymphoblastoid Cells - PolyA     |
+| SRR3404942 | Lymphoblastoid Cells - PolyA     |
+| SRR3404943 | hES Cells - PolyA                |
 
 **LIGR-seq**
 | Accession  | Sample Name   |
@@ -46,7 +57,11 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR3361013 | HEK293T Cells |
 | SRR3361017 | HEK293T Cells |
 
-Note that multiple runs of the Snakemake workflow may be required to successfully download all these datasets. We recommend verifying the download of all required datasets before moving onto the next steps of the CRSSANT pipeline.
+The FASTQ files can be downloaded in two different ways:
+(i) `download_sra_toolkit.smk`: Only the `SRRXXXXXXX` run number is needed as input. Add the run number to `config/config.yaml` for the corresponding experiment. Note that multiple runs of the Snakemake workflow may be required to successfully download all the datasets.
+(ii) `download_wget.smk`: Both the `SRRXXXXXXX` run number and the download url (Available on [SRA Explorer](https://sra-explorer.info/#)) are required as input. Add the run number to `config/config.yaml` and the url to `resources/sra_ids.txt`.
+
+We recommend verifying the download of all required datasets before moving onto the next steps of the CRSSANT pipeline. Make sure to comment out (#) the `.smk` file that you are not using in `Snakefile` (line 17-18).
 
 ## Running the Snakemake workflow
 For a dry-run of this Snakemake workflow, simply run the following code from `CRSSANT/`.
