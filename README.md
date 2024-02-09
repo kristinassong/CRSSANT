@@ -19,6 +19,7 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR2814763 | HEK293T Cells |
 | SRR2814764 | HEK293T Cells |
 | SRR2814765 | HEK293T Cells |
+[Lu et al. 2016 Cell](https://www.cell.com/fulltext/S0092867416304226#secsectitle0085)
 
 **PARIS2**
 | Accession   | Sample Name            |
@@ -33,6 +34,8 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR11624588 | HEK293T Cells - Amoto  |
 | SRR11624589 | HEK293T Cells - mRNA   |
 | SRR11951629 | HEK293T Cells - snoRNA |
+[Zhang et al. 2021 Nature Communications](https://www.nature.com/articles/s41467-021-22552-y)
+[Zhang et al. 2023 PNAS](https://pubmed.ncbi.nlm.nih.gov/37792516/)
 
 **SPLASH**
 | Accession  | Sample Name                      |
@@ -50,12 +53,14 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR3404941 | Lymphoblastoid Cells - PolyA     |
 | SRR3404942 | Lymphoblastoid Cells - PolyA     |
 | SRR3404943 | hES Cells - PolyA                |
+[Aw et al. 2016 Molecular Cell](https://www.sciencedirect.com/science/article/pii/S1097276516301046#:~:text=SPLASH%20Uncovers%20New%20rRNA%2DrRNA,intra%2D%20and%20intermolecular%20RNA%20interactions.)
 
 **LIGR-seq**
 | Accession  | Sample Name   |
 | ---------- | ------------- |
 | SRR3361013 | HEK293T Cells |
 | SRR3361017 | HEK293T Cells |
+[Sharma et al. 2016 Molecular Cell](https://www.sciencedirect.com/science/article/pii/S109727651630106X?via%3Dihub)
 
 The FASTQ files can be downloaded in two different ways:
 1. `download_sra_toolkit.smk`: Only the `SRRXXXXXXX` run number is needed as input. Add the run number to `config/config.yaml` for the corresponding experiment. Note that multiple runs of the Snakemake workflow may be required to successfully download all the datasets.
@@ -71,7 +76,9 @@ snakemake -n
 To run this Snakemake workflow, simply run the following code from `CRSSANT/`.
 ```
 snakemake --profile profile_slurm
+
 OR
+
 snakemake --profile profile_local
 ```
 
