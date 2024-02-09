@@ -50,12 +50,7 @@ classify_alignments_2:
 DG_NG_assembly:
   cpus-per-task: 16
   mem: 128G
-  time: 600
-
-TG_assembly:
-  cpus-per-task: 16
-  mem: 128G
-  time: 600
+  time: 1-6:00:00
 
 filter_spliced_short_gaps_gap1:
-  time: 600
+  time: 1-6:00:00

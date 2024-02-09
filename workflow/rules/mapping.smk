@@ -73,6 +73,7 @@ rule STAR_align_1:
         "--scoreGenomicLengthLog2scale -1 --chimOutType WithinBAM HardClip "
         "--chimSegmentMin 5 --chimJunctionOverhangMin 5 --chimScoreJunctionNonGTAG 0 "
         "-- chimScoreDropMax 80 --chimNonchimScoreDropMin 20 "
+        "--limitOutSJcollapsed 10000000 --limitIObufferSize 1500000000 "
         "&> {log}"
 
 
@@ -165,6 +166,7 @@ rule STAR_align_2:
         "--scoreGenomicLengthLog2scale -1 --chimOutType WithinBAM HardClip "
         "--chimSegmentMin 5 --chimJunctionOverhangMin 5 --chimScoreJunctionNonGTAG 0 "
         "-- chimScoreDropMax 80 --chimNonchimScoreDropMin 20 "
+        "--limitOutSJcollapsed 10000000 --limitIObufferSize 1500000000 "
         "&> {log}"
 
 

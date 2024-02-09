@@ -48,7 +48,7 @@ print(str(datetime.now())[:-7], "Reading the annotation GTF file ...")
 transdict = {} #transcript dictionary, key: transcript id, value: exon bounds 
 for line in anno:
     record = line.split()
-    if line[0]=="#" or record[0]=='track' or record[2]!='exon' or record[2]!='gene': continue
+    if line[0]=="#" or record[0]=='track' or record[2]!='exon': continue
     if record[idloc-1] != "transcript_id": #9-12: gene_id "X";transcript_id "Y";
         print("transcript_id not in expected location, exiting"); sys.exit()
     transcript = record[idloc].strip('";')

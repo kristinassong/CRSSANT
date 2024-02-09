@@ -20,8 +20,8 @@ rule create_genesfile:
     shell:
         "grep -P \'\tgene\t\' {input} | " 
         "cut -f1,4,5,7,9 | sed \'s/[[:space:]]/\t/g\' | "
-        "sed \'s/[;|\"]//g\' | awk -F $\'\t\' \'BEGIN {{OFS=FS}} {{print $1,$2-1,$3,$8,\"1000\",$4}}\' | "
-        "sed -n \'/^[0-9,X,Y,MT]/Ip\' | awk \'$1 !~ /_/\' | "
+        "sed \'s/[;|\"]//g\' | awk -F $\'\t\' \'BEGIN {{OFS=FS}} {{print $1,$2-1,$3,$6,\"1000\",$4}}\' | "
+        "sed -n \'/^[0-9,X,Y,MT]/Ip\' | awk \'$1 !~ /_/\' | " # remove weird chromosomes
         "sort -k1,1 -k2,2n > {output}"
 
 
@@ -38,8 +38,7 @@ rule sam_to_sorted_bam:
         "Convert {wildcards.experiment} {wildcards.accession} alignfile SAM to sorted BAM."
     shell:
         "samtools view -bS -o {params.tmp_bam} {input} && "
-        "samtools sort -o {output} {params.tmp_bam} && "
-        "samtools index {output}"
+        "samtools sort -o {output} {params.tmp_bam}"
 
 
 rule create_bedgraphs:
@@ -55,6 +54,7 @@ rule create_bedgraphs:
     message:
         "Create {wildcards.experiment} {wildcards.accession} strand-separated bedgraphs."
     shell:
+        # remove weird chromosomes
         "bedtools genomecov -bg -split -strand + -ibam {input} -g {params} | sed -n \'/^[0-9,X,Y,MT]/Ip\' | awk \'$1 !~ /_/\' | sort -k1,1 -k2,2n > {output.plus_bg} && "
         "bedtools genomecov -bg -split -strand - -ibam {input} -g {params} | sed -n \'/^[0-9,X,Y,MT]/Ip\' | awk \'$1 !~ /_/\' | sort -k1,1 -k2,2n > {output.minus_bg}"
 

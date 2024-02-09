@@ -542,9 +542,9 @@ def create_stats(dg_align_dict, genealign, covdict):
         range1=[i*10 for i in range(floor(int(start1)/10),ceil(int(end1)/10))]
         range2=[i*10 for i in range(floor(int(start2)/10),ceil(int(end2)/10))]
         overlap1=max([covdict[(chrom1,strand1,i)] for i in range1 if
-                      (chrom1,strand1,i) in covdict])
+                      (chrom1,strand1,i) in covdict], default=0)
         overlap2=max([covdict[(chrom2,strand2,i)] for i in range2 if
-                      (chrom2,strand2,i) in covdict])
+                      (chrom2,strand2,i) in covdict], default=0)
         covfrac=len(alignids)/np.sqrt(overlap1*overlap2)
         #print(dg,len(alignids),overlap1,overlap2,covfrac)
 
