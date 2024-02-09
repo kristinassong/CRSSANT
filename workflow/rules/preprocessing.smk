@@ -1,8 +1,8 @@
 rule trim3:
     input:
-        fq_gz = "resources/fastq/{experiment}/{accession}.fastq.gz"
+        "resources/fastq/{experiment}/{accession}.fastq.gz"
     output:
-        "resources/preprocessed_fastq/{experiment}/{accession}.trim3.fastq"
+        "resources/preprocessed_fastq/{experiment}/{accession}_trim3.fastq"
     threads:
         32
     conda:
@@ -40,7 +40,7 @@ rule trim5:
     output:
         "resources/preprocessed_fastq/{experiment}/{accession}.fastq"
     params:
-        tmp_fq = "resources/preprocessed_fastq/{experiment}/{accession}_trim3"
+        "resources/preprocessed_fastq/{experiment}/{accession}_trim3"
     threads:
         32
     conda:
@@ -56,7 +56,7 @@ rule trim5:
         "-trimlog {log} "
         "{input} {output} "
         "HEADCROP:17 MINLEN:20 && "
-        "rm {params}* {params}.fastq"
+        "rm {params}*"
 
 
 ###############################################################
