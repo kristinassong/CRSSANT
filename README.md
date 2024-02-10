@@ -12,55 +12,64 @@ This Snakemake workflow has been tested with `v7.32.4`.
 This Snakemake workflow includes the following datasets. The datasets/samples to be included in the workflow can be modified in `config/config.yaml`.
 
 **PARIS**
-| Accession  | Sample Name   |
-| -----------| ------------- |
-| SRR2814761 | HeLa Cells    |
-| SRR2814762 | HeLa Cells    |
-| SRR2814763 | HEK293T Cells |
-| SRR2814764 | HEK293T Cells |
-| SRR2814765 | HEK293T Cells |
 [Lu et al. 2016 Cell](https://www.cell.com/fulltext/S0092867416304226#secsectitle0085)
+| Accession  | Sample Name  |
+| -----------| ------------ |
+| SRR2814761 | HeLa         |
+| SRR2814762 | HeLa         |
+| SRR2814763 | HEK293T      |
+| SRR2814764 | HEK293T      |
+| SRR2814765 | HEK293T      |
 
 **PARIS2**
-| Accession   | Sample Name            |
-| ----------- | ---------------------- |
-| SRR11624581 | HEK293T Cells - AMT    |
-| SRR11624582 | HEK293T Cells - AMT    |
-| SRR11624583 | HEK293T Cells - AMT    |
-| SRR11624584 | HEK293T Cells - AMT    |
-| SRR11624585 | HEK293T Cells - Amoto  |
-| SRR11624586 | HEK293T Cells - Amoto  |
-| SRR11624587 | HEK293T Cells - Amoto  |
-| SRR11624588 | HEK293T Cells - Amoto  |
-| SRR11624589 | HEK293T Cells - mRNA   |
-| SRR11951629 | HEK293T Cells - snoRNA |
 [Zhang et al. 2021 Nature Communications](https://www.nature.com/articles/s41467-021-22552-y)
 [Zhang et al. 2023 PNAS](https://pubmed.ncbi.nlm.nih.gov/37792516/)
+| Accession   | Sample Name                          |
+| ----------- | ------------------------------------ |
+| SRR11624581 | HEK293T - AMT                        |
+| SRR11624582 | HEK293T - AMT                        |
+| SRR11624583 | HEK293T - AMT                        |
+| SRR11624584 | HEK293T - AMT                        |
+| SRR11624585 | HEK293T - Amoto                      |
+| SRR11624586 | HEK293T - Amoto                      |
+| SRR11624587 | HEK293T - Amoto                      |
+| SRR11624588 | HEK293T - Amoto                      |
+| SRR11624589 | HEK293T - mRNA                       |
+| SRR11951629 | HEK293T - snoRNA                     |
+| SRR24883901 | Neuron - chromatin associated RNA    |
+| SRR24883902 | Astrocyte - chromatin associated RNA |
+| SRR24883903 | NPC - chromatin associated RNA       |
+| SRR24883904 | iPS - chromatin associated RNA       |
+| SRR24883905 | ECs - chromatin associated RNA       |
+| SRR24883906 | HEK293T - chromatin associated RNA   |
+| SRR24883907 | SHSY5Y - snoRNA                      |
+| SRR24883908 | HEK293T - snoRNA                     |
+| SRR24883909 | HEK293T - Total RNA                  |
 
 **SPLASH**
-| Accession  | Sample Name                      |
-| ---------- | -------------------------------- |
-| SRR3404924 | Lymphoblastoid Cells - Total RNA |
-| SRR3404925 | Lymphoblastoid Cells - Total RNA |
-| SRR3404926 | hES Cells - PolyA                |
-| SRR3404927 | RA Cells - PolyA                 |
-| SRR3404928 | RA Cells - PolyA                 |
-| SRR3404936 | Lymphoblastoid Cells - Total RNA |
-| SRR3404937 | Lymphoblastoid Cells - Total RNA |
-| SRR3404938 | Lymphoblastoid Cells - snoRNA    |
-| SRR3404939 | Lymphoblastoid Cells - PolyA     |
-| SRR3404940 | Lymphoblastoid Cells - PolyA     |
-| SRR3404941 | Lymphoblastoid Cells - PolyA     |
-| SRR3404942 | Lymphoblastoid Cells - PolyA     |
-| SRR3404943 | hES Cells - PolyA                |
 [Aw et al. 2016 Molecular Cell](https://www.sciencedirect.com/science/article/pii/S1097276516301046#:~:text=SPLASH%20Uncovers%20New%20rRNA%2DrRNA,intra%2D%20and%20intermolecular%20RNA%20interactions.)
+| Accession  | Sample Name                |
+| ---------- | -------------------------- |
+| SRR3404924 | Lymphoblastoid - Total RNA |
+| SRR3404925 | Lymphoblastoid - Total RNA |
+| SRR3404926 | hES - PolyA                |
+| SRR3404927 | RA - PolyA                 |
+| SRR3404928 | RA - PolyA                 |
+| SRR3404936 | Lymphoblastoid - Total RNA |
+| SRR3404937 | Lymphoblastoid - Total RNA |
+| SRR3404938 | Lymphoblastoid - snoRNA    |
+| SRR3404939 | Lymphoblastoid - PolyA     |
+| SRR3404940 | Lymphoblastoid - PolyA     |
+| SRR3404941 | Lymphoblastoid - PolyA     |
+| SRR3404942 | Lymphoblastoid - PolyA     |
+| SRR3404943 | hES - PolyA                |
 
 **LIGR-seq**
-| Accession  | Sample Name   |
-| ---------- | ------------- |
-| SRR3361013 | HEK293T Cells |
-| SRR3361017 | HEK293T Cells |
 [Sharma et al. 2016 Molecular Cell](https://www.sciencedirect.com/science/article/pii/S109727651630106X?via%3Dihub)
+| Accession  | Sample Name |
+| ---------- | ----------- |
+| SRR3361013 | HEK293T     |
+| SRR3361017 | HEK293T     |
 
 The FASTQ files can be downloaded in two different ways:
 1. `download_sra_toolkit.smk`: Only the `SRRXXXXXXX` run number is needed as input. Add the run number to `config/config.yaml` for the corresponding experiment. Note that multiple runs of the Snakemake workflow may be required to successfully download all the datasets.
