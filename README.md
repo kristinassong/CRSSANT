@@ -11,8 +11,7 @@ This Snakemake workflow has been tested with `v7.32.4`.
 ## Downloading FASTQ files from GEO
 This Snakemake workflow includes the following datasets. The datasets/samples to be included in the workflow can be modified in `config/config.yaml`.
 
-**PARIS**
-##
+**PARIS**<br/>
 [Lu et al. 2016 Cell](https://www.cell.com/fulltext/S0092867416304226#secsectitle0085)
 | Accession  | Sample Name  |
 | -----------| ------------ |
@@ -22,10 +21,8 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR2814764 | HEK293T      |
 | SRR2814765 | HEK293T      |
 
-**PARIS2**
-##
-[Zhang et al. 2021 Nature Communications](https://www.nature.com/articles/s41467-021-22552-y)
-##
+**PARIS2**<br/>
+[Zhang et al. 2021 Nature Communications](https://www.nature.com/articles/s41467-021-22552-y)<br/>
 [Zhang et al. 2023 PNAS](https://pubmed.ncbi.nlm.nih.gov/37792516/)
 | Accession   | Sample Name                          |
 | ----------- | ------------------------------------ |
@@ -49,8 +46,7 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR24883908 | HEK293T - snoRNA                     |
 | SRR24883909 | HEK293T - Total RNA                  |
 
-**SPLASH**
-##
+**SPLASH**<br/>
 [Aw et al. 2016 Molecular Cell](https://www.sciencedirect.com/science/article/pii/S1097276516301046#:~:text=SPLASH%20Uncovers%20New%20rRNA%2DrRNA,intra%2D%20and%20intermolecular%20RNA%20interactions.)
 | Accession  | Sample Name                |
 | ---------- | -------------------------- |
@@ -68,8 +64,7 @@ This Snakemake workflow includes the following datasets. The datasets/samples to
 | SRR3404942 | Lymphoblastoid - PolyA     |
 | SRR3404943 | hES - PolyA                |
 
-**LIGR-seq**
-##
+**LIGR-seq**<br/>
 [Sharma et al. 2016 Molecular Cell](https://www.sciencedirect.com/science/article/pii/S109727651630106X?via%3Dihub)
 | Accession  | Sample Name |
 | ---------- | ----------- |
