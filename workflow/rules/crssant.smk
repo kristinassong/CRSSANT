@@ -69,8 +69,8 @@ rule DG_NG_assembly:
         bedpe = "results/crssant/{experiment}/{accession}/{accession}_pri_crssant_dg.bedpe"
     params:
         outdir = "results/crssant/{experiment}/{accession}/",
-        cluster = "cliques",
-        t_o = 0.1
+        cluster = "cliques", # optimal
+        t_o = 0.5 # optimal
     threads:
         16
     conda:

@@ -31,23 +31,23 @@ rule all:
         #LIGR_seq_fq = expand("resources/fastq/LIGR_seq/{accession}.fastq.gz",accession=config['LIGR_seq']),
         #SPLASH_fq = expand("resources/fastq/SPLASH/{accession}.fastq.gz",accession=config['SPLASH']),
         # OPTION 2: Download FASTQ files via wget -- profile_local
-        #fq = "resources/fastq/download_status.txt",
+        fq = "resources/fastq/download_status.txt",
         # Git repos -- use profile_local
         icSHAPE_git = directory('resources/icSHAPE'),
         CoCo_git = directory('resources/CoCo'),
         #### Step 2: CRSSANT
         # FastQC
-        #PARIS_qc = expand("results/fastqc/{qc_type}/PARIS/{accession}_fastqc.html",accession=config['PARIS'],qc_type=['raw','preprocessed']),
-        #PARIS2_qc = expand("results/fastqc/{qc_type}/PARIS2/{accession}_fastqc.html",accession=config['PARIS2'],qc_type=['raw','preprocessed']),
-        #LIGR_seq_qc = expand("results/fastqc/{qc_type}/LIGR_seq/{accession}_fastqc.html",accession=config['LIGR_seq'],qc_type=['raw','preprocessed']),
-        #SPLASH_qc = expand("results/fastqc/{qc_type}/SPLASH/{accession}_fastqc.html",accession=config['SPLASH'],qc_type=['raw','preprocessed']),
+        PARIS_qc = expand("results/fastqc/{qc_type}/PARIS/{accession}_fastqc.html",accession=config['PARIS'],qc_type=['raw','preprocessed']),
+        PARIS2_qc = expand("results/fastqc/{qc_type}/PARIS2/{accession}_fastqc.html",accession=config['PARIS2'],qc_type=['raw','preprocessed']),
+        LIGR_seq_qc = expand("results/fastqc/{qc_type}/LIGR_seq/{accession}_fastqc.html",accession=config['LIGR_seq'],qc_type=['raw','preprocessed']),
+        SPLASH_qc = expand("results/fastqc/{qc_type}/SPLASH/{accession}_fastqc.html",accession=config['SPLASH'],qc_type=['raw','preprocessed']),
         # Mapping stats
-        #PARIS_len_stats = expand("results/stats/PARIS/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS'],stats=['seg','gap']),
-        #PARIS2_len_stats = expand("results/stats/PARIS2/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS2'],stats=['seg','gap']),
-        #LIGR_seq_len_stats = expand("results/stats/LIGR_seq/{accession}/{accession}_{stats}len.pdf",accession=config['LIGR_seq'],stats=['seg','gap']),
-        #SPLASH_len_stats = expand("results/stats/SPLASH/{accession}/{accession}_{stats}len.pdf",accession=config['SPLASH'],stats=['seg','gap']),
+        PARIS_len_stats = expand("results/stats/PARIS/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS'],stats=['seg','gap']),
+        PARIS2_len_stats = expand("results/stats/PARIS2/{accession}/{accession}_{stats}len.pdf",accession=config['PARIS2'],stats=['seg','gap']),
+        LIGR_seq_len_stats = expand("results/stats/LIGR_seq/{accession}/{accession}_{stats}len.pdf",accession=config['LIGR_seq'],stats=['seg','gap']),
+        SPLASH_len_stats = expand("results/stats/SPLASH/{accession}/{accession}_{stats}len.pdf",accession=config['SPLASH'],stats=['seg','gap']),
         # Assembly
-        #PARIS_asm = expand("results/crssant/PARIS/{accession}/{accession}_pri_crssant_dg.bedpe",accession=config['PARIS']),
-        #PARIS2_asm = expand("results/crssant/PARIS2/{accession}/{accession}_pri_crssant_dg.bedpe",accession=['SRR11624581']),
+        PARIS_asm = expand("results/crssant/PARIS/{accession}/{accession}_pri_crssant_dg.bedpe",accession=config['PARIS']),
+        PARIS2_asm = expand("results/crssant/PARIS2/{accession}/{accession}_pri_crssant_dg.bedpe",accession=config['PARIS2']),
         LIGR_seq_asm = expand("results/crssant/LIGR_seq/{accession}/{accession}_pri_crssant_dg.bedpe",accession=config['LIGR_seq']),
-        #SPLASH_asm = expand("results/crssant/SPLASH/{accession}/{accession}_pri_crssant_dg.bedpe",accession=config['SPLASH'])
+        SPLASH_asm = expand("results/crssant/SPLASH/{accession}/{accession}_pri_crssant_dg.bedpe",accession=config['SPLASH'])
